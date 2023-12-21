@@ -41,7 +41,7 @@ services:
     volumes:
       - ./adminApp/:/usr/src/app
     ports: 
-      - "5200:5200"
+      - "5700:5700"
     networks:
       - shirikisho_net
   social_ks_app:
