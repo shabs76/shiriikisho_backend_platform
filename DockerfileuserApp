@@ -1,0 +1,28 @@
+FROM node:18
+
+# We have to install nodemon globally before moving into the working directory
+RUN npm install -g nodemon
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY userApp/package*.json ./
+
+RUN npm config set fetch-retry-mintimeout 20000
+RUN npm config set fetch-retry-maxtimeout 120000
+
+RUN npm install
+
+RUN npm uninstall bcrypt
+
+RUN npm install bcrypt
+
+# Bundle app source
+COPY userApp/ .
+
+EXPOSE 5100
+RUN ["chmod", "+x", "/usr/src/app/start.sh"]
+# RUN chmod +x "/usr/src/app/start.sh"
+ENTRYPOINT [ "/bin/sh", "/usr/src/app/start.sh" ]

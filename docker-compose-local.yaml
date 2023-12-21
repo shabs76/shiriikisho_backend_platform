@@ -1,0 +1,167 @@
+version: "3.7"
+
+networks:
+  shirikisho_net:
+    driver: bridge
+
+volumes:
+  data_base_data:
+  phpmyadmindata:
+  adminApp:
+  loanApp:
+  socialApp:
+  transactionApp:
+  userApp:
+
+services:
+  normal_user_app:
+    build:
+      args:
+        user: normal_user
+        uid: 12000
+      context: ./
+      dockerfile: DockerfileuserApp
+    container_name: normal_user_app
+    working_dir: /usr/src/app
+    volumes:
+      - ./userApp/:/usr/src/app
+    ports: 
+      - "5100:5100"
+    networks:
+      - shirikisho_net
+  admin_user_app:
+    build:
+      args:
+        user: admin_user
+        uid: 13000
+      context: ./
+      dockerfile: DockerfileadminApp
+    container_name: admin_user_app
+    working_dir: /usr/src/app
+    volumes:
+      - ./adminApp/:/usr/src/app
+    ports: 
+      - "5700:5700"
+    networks:
+      - shirikisho_net
+  social_ks_app:
+    build:
+      args:
+        user: social_ks_user
+        uid: 14000
+      context: ./
+      dockerfile: DockerfilesocialApp
+    container_name: social_ks_app
+    working_dir: /usr/src/app
+    volumes:
+      - ./socialApp/:/usr/src/app
+    ports: 
+      - "5300:5300"
+    networks:
+      - shirikisho_net
+  ks_pay_gateway_app:
+    build:
+      args:
+        user: ks_pay_gateway_user
+        uid: 15000
+      context: ./
+      dockerfile: DockerfiletranApp
+    container_name: ks_pay_gateway_app
+    working_dir: /usr/src/app
+    volumes:
+      - ./transactionApp/:/usr/src/app
+    ports: 
+      - "5400:5400"
+    networks:
+      - shirikisho_net
+  ks_loans_app:
+    build:
+      args:
+        user: ks_loans_user
+        uid: 16000
+      context: ./
+      dockerfile: DockerfileloanApp
+    container_name: ks_loans_app
+    working_dir: /usr/src/app
+    volumes:
+      - ./loanApp/:/usr/src/app
+    ports: 
+      - "5500:5500"
+    networks:
+      - shirikisho_net
+      
+  ks_media_app:
+    build:
+      args:
+        user: ks_media_user
+        uid: 17000
+      context: ./
+      dockerfile: DockerfilemediaApp
+    container_name: ks_media_app
+    working_dir: /usr/src/app
+    volumes:
+      - ./mediaApp/:/usr/src/app
+    ports: 
+      - "5600:5600"
+    networks:
+      - shirikisho_net
+
+  mariadb:
+    image: mariadb:10.4.8-bionic
+    container_name: shirikisho_maria
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE_NAUTH}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS}
+      MYSQL_USER: ${MYSQL_USER_NAUTH}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD_NAUTH}
+    volumes:
+      - data_base_data:/var/lib/mysql/
+    ports:
+      - "3306:3306"
+    networks:
+      - shirikisho_net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:fpm-alpine
+    container_name: shirikisho_mariaphpmyadmin
+    environment:
+      PMA_HOST: mariadb
+    volumes:
+      - phpmyadmindata:/var/www/html
+    networks:
+      - shirikisho_net
+    depends_on:
+      - mariadb
+  
+  nginx:
+    image: nginx:latest
+    container_name: shirikisho_marianginx-phpmyadmin
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+      - phpmyadmindata:/var/www/html/:ro
+    ports:
+      - "247:80"
+    networks:
+      - shirikisho_net
+    depends_on:
+      - mariadb
+      - phpmyadmin
+
+  
+  nginx-app:
+    image: nginx:1.17.4-alpine
+    container_name: shirikisho_nginx-app
+    ports:
+      - "241:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./dev-docker/nginx:/etc/nginx/conf.d #this is for development locally
+    networks:
+      - shirikisho_net
+    depends_on:
+      - mariadb
+      - normal_user_app
+      - admin_user_app
+      - social_ks_app
+      - ks_pay_gateway_app
+      - ks_loans_app

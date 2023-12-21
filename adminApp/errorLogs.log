@@ -1,0 +1,18 @@
+{
+  message: { state: 'error', data: 'This is a test error just to begin with' },
+  level: 'error',
+  label: 'general',
+  timestamp: '2023-12-04T13:51:42.412Z'
+}
+{
+  message: { state: 'error', data: 'This is a test error just to begin with' },
+  level: 'error',
+  label: 'general',
+  timestamp: '2023-12-04T13:51:45.807Z'
+}
+{
+  message: { state: 'error', data: 'This is a test error just to begin with' },
+  label: 'general',
+  level: 'error',
+  timestamp: '2023-12-04T13:55:37.718Z'
+}
