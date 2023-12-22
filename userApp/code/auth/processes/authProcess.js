@@ -205,7 +205,7 @@ class authProcess extends mainActsClass {
         // return success with code to track verification
         const sc = {
             state: 'success',
-            data: 'Namba ya uthibitisho imetumwa kwenye number ya simu +'+phone,
+            data: 'Namba ya uthibitisho imetumwa kwenye number ya simu +'+phone+otp,
             otp_id: savOtp.data.otp_id
         }
         return sc;
