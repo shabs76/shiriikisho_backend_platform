@@ -193,14 +193,14 @@ class authProcess extends mainActsClass {
             phone,
             sms: otp+' Itakuwa namba ya udhibitisho kwenye mfumo wa shirikisho.'
         }
-        const sendTextAns = await this.sendNormalTexts(textInfo);
-        if (sendTextAns.state !== 'success') {
-            const er = {
-                state: 'error',
-                data: 'Mfumo umeshindwa kutuma ujumbe uwa udhibitisho. Tafadhali jaribu tena'
-            }
-            return er;
-        }
+        // const sendTextAns = await this.sendNormalTexts(textInfo);
+        // if (sendTextAns.state !== 'success') {
+        //     const er = {
+        //         state: 'error',
+        //         data: 'Mfumo umeshindwa kutuma ujumbe uwa udhibitisho. Tafadhali jaribu tena'
+        //     }
+        //     return er;
+        // }
 
         // return success with code to track verification
         const sc = {
