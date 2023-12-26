@@ -188,6 +188,22 @@ class authProcess extends mainActsClass {
             return er;
         }
 
+        // check if the phone number exists
+        const drDets = await authDbObj.selectDriverDetails([phone], " `phone` = ?");
+        if (!_.isArray(drDets)) {
+            const er = {
+                state: 'error',
+                data: 'Hitilasfu imetokea wakati wakukagua namba ya simu'
+            }
+            return er;
+        } else if (_.isArray(drDets) && !_.isEmpty(drDets)) {
+            const er = {
+                state: 'error',
+                data: 'Namba ya simu imeshatumika kusajili dereva mwingine'
+            }
+            return er;
+        }
+
         // send otp to user 
         const textInfo = {
             phone,
