@@ -373,7 +373,7 @@ class authProcess extends mainActsClass {
         if (veriPhone.state !== 'success') {
             return veriPhone;
         }
-        data.phone = pvAns[0].phone;
+        data.phone = veriPhone.phone;
         const regAns = await authDbObj.addingdriversDetails(data);
         return regAns;
     }
@@ -395,7 +395,8 @@ class authProcess extends mainActsClass {
         }
         const sc = {
             state: 'success',
-            data: 'Phone number was verified'
+            data: 'Phone number was verified',
+            phone: pvAns[0].phone,
         }
         return sc;
     }
