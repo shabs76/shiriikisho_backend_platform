@@ -39,7 +39,6 @@ const compressVideo = (inputPath, outputPath, quality) => {
 }
 
 app.post('/upload/images', imageUpload.single('image'), async (req, res) => {
-  mediaStorageObj.Mlogger.debug('here');
   if (!req.file) {
     const er = {
       state: 'error',
