@@ -79,22 +79,24 @@ app.post('/upload/images', imageUpload.single('image'), async (req, res) => {
   return res.json(ansData);
 });
 
-const authcheckForAcces = async (req, res, next) => {
-  const hedz = req.headers;
-  console.log(hedz);
+const authcheckForAcces = async (hedz) => {
   if (typeof (hedz.logkey) !== 'string' || typeof (hedz.logsess) !== 'string' || typeof (hedz.keytype) !== 'string') {
-      return res.status(403).send('Forbidden');
+      return false;
   }
   const authAns = await mediaAccessObj.getImageFilesAuthChecker(hedz.logkey, hedz.logsess, hedz.keytype);
   if (authAns.state !== 'success') {
     mediaAccessObj.Mlogger.error(authAns);
-    return res.status(403).send('Forbidden');
+    return false;
   }
-  next();
+  return true;
 }
 
-app.get('/get/image/:image', authcheckForAcces, async (req, res) => {
-    const { image } = req.params;
+app.get('/get/image/:image/:logkey/:logsess/:keytype', async (req, res) => {
+    const { image, keytype, logkey, logsess } = req.params;
+    const ansCheck = await authcheckForAcces({keytype, logkey, logsess});
+    if (!ansCheck) {
+      return res.status(403).send('Forbidden');
+    }
     const imageD = await mediaStorageObj.getAllImagesPathsNormal(image);
     if (imageD.state !== 'success') {
         return res.status(404).send('File record not found');
