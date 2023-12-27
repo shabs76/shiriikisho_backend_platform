@@ -160,7 +160,7 @@ class authProcess extends mainActsClass {
         return sc;
     }
 
-    verifyDriverPhoneInitProcess = async (phone, user_id) => {
+    verifyDriverPhoneInitProcess = async (phone, user_id, stating = 'norepeat') => {
         // check if the phone number is valid phone number
         if (!authProcessObj.isValidPhone(phone) || typeof (user_id) !== 'string') {
             const er = {
@@ -196,7 +196,7 @@ class authProcess extends mainActsClass {
                 data: 'Hitilasfu imetokea wakati wakukagua namba ya simu'
             }
             return er;
-        } else if (_.isArray(drDets) && !_.isEmpty(drDets)) {
+        } else if (_.isArray(drDets) && !_.isEmpty(drDets) && stating === 'norepeat') {
             const er = {
                 state: 'error',
                 data: 'Namba ya simu imeshatumika kusajili dereva mwingine'
@@ -209,19 +209,19 @@ class authProcess extends mainActsClass {
             phone,
             sms: otp+' Itakuwa namba ya udhibitisho kwenye mfumo wa shirikisho.'
         }
-        // const sendTextAns = await this.sendNormalTexts(textInfo);
-        // if (sendTextAns.state !== 'success') {
-        //     const er = {
-        //         state: 'error',
-        //         data: 'Mfumo umeshindwa kutuma ujumbe uwa udhibitisho. Tafadhali jaribu tena'
-        //     }
-        //     return er;
-        // }
+        const sendTextAns = await this.sendNormalTexts(textInfo);
+        if (sendTextAns.state !== 'success') {
+            const er = {
+                state: 'error',
+                data: 'Mfumo umeshindwa kutuma ujumbe uwa udhibitisho. Tafadhali jaribu tena'
+            }
+            return er;
+        }
 
         // return success with code to track verification
         const sc = {
             state: 'success',
-            data: 'Namba ya uthibitisho imetumwa kwenye number ya simu +'+phone+otp,
+            data: 'Namba ya uthibitisho imetumwa kwenye number ya simu +'+phone,
             otp_id: savOtp.data.otp_id
         }
         return sc;
@@ -646,7 +646,7 @@ class authProcess extends mainActsClass {
         }
 
         // send login code.
-        const ansPhCO = await this.verifyDriverPhoneInitProcess(phone, dAns[0].driver_id);
+        const ansPhCO = await this.verifyDriverPhoneInitProcess(phone, dAns[0].driver_id, 'repeat');
         return ansPhCO;
     }
 
