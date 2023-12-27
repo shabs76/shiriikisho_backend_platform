@@ -267,22 +267,22 @@ class authProcess extends mainActsClass {
         }
 
         // send new otp
-        const textInfo = {
-            phone: otAns[0].phone,
-            sms: infCo.otp+' Itakuwa namba ya udhibitisho kwenye mfumo wa shirikisho.'
-        }
-        const sendTextAns = await this.sendNormalTexts(textInfo);
-        if (sendTextAns.state !== 'success') {
-            const er = {
-                state: 'error',
-                data: 'Mfumo umeshindwa kutuma ujumbe uwa udhibitisho. Tafadhali jaribu tena'
-            }
-            return er;
-        }
+        // const textInfo = {
+        //     phone: otAns[0].phone,
+        //     sms: infCo.otp+' Itakuwa namba ya udhibitisho kwenye mfumo wa shirikisho.'
+        // }
+        // const sendTextAns = await this.sendNormalTexts(textInfo);
+        // if (sendTextAns.state !== 'success') {
+        //     const er = {
+        //         state: 'error',
+        //         data: 'Mfumo umeshindwa kutuma ujumbe uwa udhibitisho. Tafadhali jaribu tena'
+        //     }
+        //     return er;
+        // }
 
         const sc = {
             state: 'success',
-            data: 'Ujumbe wa number ya umetumwa kwenye simu +'+otAns[0].phone
+            data: 'Ujumbe wa number ya umetumwa kwenye simu +'+otAns[0].phone+'-'+otp
         }
 
         return sc;
