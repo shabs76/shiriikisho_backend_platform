@@ -11,6 +11,12 @@ export class selectDBClass extends insertDbClass{
         return ans;
     }
 
+    selectDriverNumbers = async (whereArr = [''], subquery = " `park_area` = ? ") => {
+        const ql = "SELECT COUNT(driver_id) AS drivers FROM `drivers` WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
     selectLeaderTypes = async (whereArr = [''], subquery = " `type_id` = ?") => {
         const ql = "SELECT `type_id`, `type_name`, `type_number`, `type_date` FROM `leadership_types` WHERE "+subquery;
         const ans = await this.runQuery(whereArr, ql);
