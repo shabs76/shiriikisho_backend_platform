@@ -181,7 +181,7 @@ class getInfoProcessClass extends mainActsClass{
             return er;
         }
         // check for unverified drivers
-        const unVerDriver = await authDbObj.selectDriverNoPassDetails([paLeader[0].park_id, 'created'], " `park_area` = ? AND `status` = ? ");
+        const unVerDriver = await authDbObj.selectDriverNoPassDetails([paLeader[0].park_id, 'created', leader_driver_id], " `park_area` = ? AND `status` = ? AND `driver_id` != ? ");
         if (!_.isArray(unVerDriver)) {
             this.Mlogger.error(unVerDriver);
             const er = {
