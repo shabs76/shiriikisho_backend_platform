@@ -103,9 +103,11 @@ class getInfoProcessClass extends mainActsClass{
             driverOb.uniform = 'an error ecountered';
         } else if(_.isArray(uniformDet) && _.isEmpty(uniformDet)) {
             driverOb.uniform = 'Haijahalalishwa';
+        } else {
+            driverOb.uniform = uniformDet[0].uniform_num;
         }
 
-        driverOb.uniform = uniformDet[0].uniform_num;
+        
 
         // now get leadership information if exits
         const ledInf = await authDbObj.selectParkLeaders([driver_id, 'active'], " `driver_id` = ? AND `status` = ? ");
