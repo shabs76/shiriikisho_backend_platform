@@ -11,6 +11,12 @@ export class selectDBClass extends insertDbClass{
         return ans;
     }
 
+    selectDriverNoPassDetails = async (whereArr = [''], subquery = " `driver_id` != ?") => {
+        const ql = "SELECT `driver_id`, `fname`, `mname`, `lname`, `email`, `phone`, `dob`, `gender`, `relationship`, `residence`, `park_area`, `vehicle_number`, `licence_number`, `tin_number`, `id_type`, `id_number`, `id_picture`, `passport`, `status`, `driver_date` FROM `drivers` WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
     selectDriverNumbers = async (whereArr = [''], subquery = " `park_area` = ? ") => {
         const ql = "SELECT COUNT(driver_id) AS drivers FROM `drivers` WHERE "+subquery;
         const ans = await this.runQuery(whereArr, ql);

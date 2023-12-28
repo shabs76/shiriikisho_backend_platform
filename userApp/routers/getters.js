@@ -57,6 +57,31 @@ router.get('/driver/details', async (req, res) => {
 
 });
 
+router.get('/unverified/drivers', async (req, res) => {
+    const hedz = req.headers;
+    if (typeof (hedz.drlogkey) !== 'string' || typeof (hedz.drlogsess) !== 'string') {
+        const er = {
+            state: 'error',
+            data: 'Missing login details information',
+            adv: 'logout'
+        }
+        return res.json(er);
+    }
+    // check if the login info are valid still (info.logKey) !== 'string' || typeof (info.logSess)
+    const info = {
+        logKey: hedz.drlogkey,
+        logSess: hedz.drlogsess
+    };
+   const ansLog = await authProcessObj.checkDriversLoginStatus(info);
+   if (ansLog.state !== 'success') {
+     ansLog.adv = 'logout';
+     return res.json(ansLog);
+   }
+
+   const ansDrvr = await GettorObj.getUnverifiedDriversInformation(ansLog.driver_id);
+   res.json(ansDrvr);
+})
+
 
 // from here information requires login
 
@@ -83,5 +108,8 @@ router.use(async (req, res, next) => {
    }
    next();
 });
+
+
+
 const geterRouter = router;
 export default geterRouter;

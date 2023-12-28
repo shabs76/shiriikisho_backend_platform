@@ -162,6 +162,40 @@ class getInfoProcessClass extends mainActsClass{
         return sc;
         
     }
+
+    getUnverifiedDriversInformation = async (leader_driver_id = '') => {
+        // get park_id where leader is the leader `leader_type`, `driver_id`, `park_id`, `status`,
+        const paLeader = await authDbObj.selectParkLeaders([leader_driver_id, 'active'], " `driver_id` = ? AND `status` = ? ");
+        if (!_.isArray(paLeader)) {
+            this.Mlogger.error(paLeader);
+            const er = {
+                state: 'error',
+                data: 'An error has occurred while fetching park information',
+            };
+            return er;
+        } else if (_.isArray(paLeader) && _.isEmpty(paLeader)) {
+            const er = {
+                state: 'error',
+                data: 'Hauna uongozi kwenye kituo chochote, kwa sasa.'
+            }
+            return er;
+        }
+        // check for unverified drivers
+        const unVerDriver = await authDbObj.selectDriverNoPassDetails([paLeader[0].park_id, 'created'], " `park_area` = ? AND `status` = ? ");
+        if (!_.isArray(unVerDriver)) {
+            this.Mlogger.error(unVerDriver);
+            const er = {
+                state: 'error',
+                data: 'An error has occurred while fetching driver information',
+            };
+            return er;
+        }
+        const sc = {
+            state: 'success',
+            data: unVerDriver
+        }
+        return sc;
+    }
 }
 
 const GettorObj = new getInfoProcessClass();
