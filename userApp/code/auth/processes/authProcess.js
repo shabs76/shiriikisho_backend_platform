@@ -360,14 +360,18 @@ class authProcess extends mainActsClass {
             }
             return er;
         }
-        const prkInf = await authDbObj.selectParkAreasDetails([data.park_area, 'active'], " `park_id` = ? AND `status` = ? ");
-        if (!_.isArray(prkInf) || _.isEmpty(prkInf)) {
+        // check if parking area has space for this new driver
+        const parkAns = await this.numberCalculatorForDriverInParkArea(data.park_area);
+        if (parkAns.state !== 'success') {
+            return parkAns;
+        } else if (parkAns.numremaing <= 0) {
             const er = {
                 state: 'error',
-                data: 'Kituo ulichochagua taarifa zake hazipatikani kwa sasa. Tafadhali jaribu tena.'
+                data: 'Kituo ulichochagua kimejaa wanachama. Tafadhali chagua kituo kingine'
             }
             return er;
         }
+
         // check if phone number verification exists and get phone number
         const veriPhone = await this.checkForValidVerifiedPhoneIdProcess(data.verid);
         if (veriPhone.state !== 'success') {
@@ -759,6 +763,56 @@ class authProcess extends mainActsClass {
             driver_id: LogStat.driver_id
         }
         return sc;
+    }
+
+    numberCalculatorForDriverInParkArea = async (park_id) =>{
+        if (typeof (park_id) !== 'string') {
+            const er = {
+                state: 'error',
+                data: 'Invalid parking area id'
+            }
+            return er;
+        }
+
+        // check if park area exists
+        const pak = await authDbObj.selectParkAreasDetails([park_id, 'active'], " `park_id` = ? AND `status` =? ");
+        if (!_.isArray(pak)) {
+            const er ={
+                state: 'error',
+                data: 'An error has occurred while fetching parking area details'
+            }
+            return er;
+        } else if (_.isArray(pak) && _.isEmpty(pak)) {
+            const er = {
+                state: 'error',
+                data: 'Kituo hakipo au kimeshafutiwa usajili. Tafadhali chagua kituo kingine'
+            }
+            return er;
+        }
+
+        const numBx = await authDbObj.selectDriverNumbers([park_id, 'deleted'], " `park_area` = ? AND `status` != ? ");
+        if (!_.isArray(numBx)) {
+            this.Mlogger.error(numBx);
+            const er = {
+                state: 'error',
+                data: 'An error occurred while fetching driver numbers'
+            }
+            return er;
+        } else if (_.isArray(numBx) && _.isEmpty(numBx)) {
+            const er = {
+                state: 'error',
+                data: 'Unable to get driver number in a parking area'
+            }
+            return er;
+        }
+
+        const sc = {
+            state: 'success',
+            numremaing: parseInt(pak[0].park_size) - parseInt(numBx[0].drivers)
+        }
+
+        return sc;
+
     }
 
 

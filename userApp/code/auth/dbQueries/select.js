@@ -65,6 +65,12 @@ export class selectDBClass extends insertDbClass{
         return ans;
     }
 
+    selectDriverUniformDetails = async (whereArr = [''], subquery = " `driver_id` = ? ") => {
+        const ql = "SELECT uniform_id, uniform_num, driver_id, validator_id, status, uniform_date FROM driver_uniforms WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
     // relationships starts here.
 
     selectLeaderTypesPermissions = async (whereArr = [''], subquery = " `rels_id` = ?") => {

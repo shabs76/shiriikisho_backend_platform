@@ -96,6 +96,17 @@ class getInfoProcessClass extends mainActsClass{
             return er;
         }
 
+        // get driver uniform details
+        const uniformDet = await authDbObj.selectUniformDetails([driver_id, 'active'], " `driver_id` = ? AND `status` = ? ");
+        if (!_.isArray(uniformDet)) {
+            this.Mlogger.error(uniformDet);
+            driverOb.uniform = 'an error ecountered';
+        } else if(_.isArray(uniformDet) && _.isEmpty(uniformDet)) {
+            driverOb.uniform = 'Haijahalalishwa';
+        }
+
+        driverOb.uniform = uniformDet[0].uniform_num;
+
         // now get leadership information if exits
         const ledInf = await authDbObj.selectParkLeaders([driver_id, 'active'], " `driver_id` = ? AND `status` = ? ");
         if (!_.isArray(ledInf)) {
@@ -107,7 +118,8 @@ class getInfoProcessClass extends mainActsClass{
             return er;
         } else if(_.isArray(ledInf) && _.isEmpty(ledInf)) {
             driverOb.parkName = parkInf[0].park_name;
-            driverOb.leadership = 'Mwanachama'
+            driverOb.leadership = 'Mwanachama';
+            driverOb.leaderState = 'no';
             const sc = {
                 state: 'success',
                 data:  driverOb
@@ -120,7 +132,8 @@ class getInfoProcessClass extends mainActsClass{
         if (_.isArray(letyNames)) {
             this.Mlogger.error(letyNames);
             driverOb.parkName = parkInf[0].park_name;
-            driverOb.leadership = 'Kiongozi'
+            driverOb.leadership = 'Kiongozi';
+            driverOb.leaderState = 'yes';
             const sc = {
                 state: 'success',
                 data:  driverOb
@@ -129,7 +142,8 @@ class getInfoProcessClass extends mainActsClass{
         } else if (_.isArray(letyNames) && _.isEmpty(letyNames)) {
             this.Mlogger.error(`Driver of id ${driver_id} has unknown leadership type`);
             driverOb.parkName = parkInf[0].park_name;
-            driverOb.leadership = 'Kiongozi'
+            driverOb.leadership = 'Kiongozi';
+            driverOb.leaderState = 'no';
             const sc = {
                 state: 'success',
                 data:  driverOb
