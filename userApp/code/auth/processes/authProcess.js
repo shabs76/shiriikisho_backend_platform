@@ -494,10 +494,86 @@ class authProcess extends mainActsClass {
             }
             return er;
         }
+        // update status to active 
+        const stAns = await authDbObj.updateDriverStatus({ driver_id: data.driver_id, status: 'active'});
+        if (stAns.state !== 'success') {
+            this.Mlogger.error(stAns);
+            // delete uniform
+            const delAns = await authDbObj.deleteDriverUniform(insAns.data.uniform_id);
+            if (delAns.state !== 'success') {
+                this.Mlogger.error(delAns);
+            }
+            const er = {
+                state: 'error',
+                data: 'Zoezi la kutengeneza namba ya sare ya kiongozi limeshindikana. #2'
+            }
+            return er;
+        }
 
         const sc = {
             state: 'success',
             data: 'Unimefanikiwa kuhakiki taarifa za dereva '+driverDets[0].fname
+        }
+        return sc;
+
+    }
+
+    invalidateDriverProcess = async (data) => {
+        // check if driver and validator are on the same park area
+        const driverDets = await authDbObj.selectDriverDetails([data.driver_id], "`driver_id` = ?");
+        if (!_.isArray(driverDets)) {
+            this.Mlogger.error(driverDets);
+            const er = {
+                state: 'error',
+                data: 'Tatizo limejitokeza kwenye mfumo. Tafadhali jaribu tena'
+            }
+            return er;
+        } else if (_.isArray(driverDets) && _.isEmpty(driverDets)) {
+            const er = {
+                state: 'error',
+                data: 'Taarifa za dereva sio sahihi. Au number yake haipo sahihi.'
+            }
+            return er;
+        }
+
+        const valiDets = await authDbObj.selectDriverDetails([data.validator_id], "`driver_id` = ? AND `status` = 'active'");
+        if (!_.isArray(valiDets)) {
+            this.Mlogger.error(valiDets);
+            const er = {
+                state: 'error',
+                data: 'Tatizo limejitokeza kwenye mfumo. Tafadhali jaribu tena'
+            }
+            return er;
+        } else if (_.isArray(valiDets) && _.isEmpty(valiDets)) {
+            const er = {
+                state: 'error',
+                data: 'Taarifa za kiongozi sio sahihi. Au number yake haipo sahihi.'
+            }
+            return er;
+        }
+
+        if (driverDets[0].park_area !== valiDets[0].park_area) {
+            const er = {
+                state: 'error',
+                data: 'Kiongozi wa kituo cha dereva husika ndio anaweza kuhakiki taarifa za dereva wa kituo husika.'
+            }
+            return er;
+        }
+
+        // update status to blocked
+        const stAns = await authDbObj.updateDriverStatus({ driver_id: data.driver_id, status: 'blocked'});
+        if (stAns.state !== 'success') {
+            this.Mlogger.error(stAns);
+            const er = {
+                state: 'error',
+                data: 'Zoezi la kutengeneza namba ya sare ya kiongozi limeshindikana. #2'
+            }
+            return er;
+        }
+
+        const sc = {
+            state: 'success',
+            data: 'Unimefanikiwa kukataa dereva '+driverDets[0].fname+' kwenye kituo chako'
         }
         return sc;
 

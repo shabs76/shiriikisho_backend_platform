@@ -43,7 +43,23 @@ router.post('/validation', async (req, res) => {
     // now validate driver
     const vAns = await authProcessObj.validateDriverProcess(vaLdata);
     res.json(vAns);
-})
+});
+
+router.post('/invalidate', async (req, res) => {
+    const sendData = {};
+    sendData.logKey = req.headers.drlogkey;
+    sendData.logSess = req.headers.drlogsess;
+    sendData.perm_no = 510;
+    const ansPerm = await authProcessObj.permissionCheckDriversProcess(sendData);
+    if (ansPerm.state !== 'success') {
+        return res.json(ansPerm);
+    }
+    const vaLdata = req.body;
+    vaLdata.validator_id = ansPerm.driver_id;
+    // now invalidate driver
+    const ivAns = await authProcessObj.invalidateDriverProcess(vaLdata);
+    res.json(ivAns);
+});
 
 
 const driverRouter = router;
