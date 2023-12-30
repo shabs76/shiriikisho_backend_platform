@@ -196,6 +196,40 @@ class getInfoProcessClass extends mainActsClass{
         }
         return sc;
     }
+
+    getOtherDriversMember = async (driver_id = '') => {
+        const driveInf = await authDbObj.selectDriverNoPassDetails([driver_id, 'active'], " `driver_id` = ? AND `status` = ?");
+        if (!_.isArray(driveInf)) {
+            this.Mlogger.error(driveInf);
+            const er = {
+                state: 'error',
+                data: 'An error has occurred while fetching parking area details'
+            }
+            return er;
+        } else if (_.isArray(driveInf) && _.isEmpty(driveInf)) {
+            const er = {
+                state: 'error',
+                data: 'Ruhusa ya kuona taarifa za kituo imekataliwa.',
+                adv: 'logout'
+            }
+            return er;
+        }
+        // check for other drivers
+        const verDrivers = await authDbObj.selectDriverNoPassDetails([driveInf[0].park_area, 'active', driver_id], " `park_area` = ? AND `status` = ? AND `driver_id` != ? ");
+        if (!_.isArray(verDrivers)) {
+            this.Mlogger.error(verDrivers);
+            const er = {
+                state: 'error',
+                data: 'An error has occurred while fetching other drivers information',
+            };
+            return er;
+        }
+        const sc = {
+            state: 'success',
+            data: verDrivers,
+        }
+        return sc;
+    }
 }
 
 const GettorObj = new getInfoProcessClass();

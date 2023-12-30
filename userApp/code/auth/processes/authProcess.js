@@ -783,7 +783,7 @@ class authProcess extends mainActsClass {
         const sc = {
             state: 'success',
             data: 'Taarifa za kiusajili zipo sahihi.',
-            driver_id: stAns[0].driver_id
+            driver_id: stAns[0].driver_id,
         }
         return sc;
     }
