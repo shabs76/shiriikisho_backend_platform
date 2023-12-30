@@ -215,7 +215,7 @@ class getInfoProcessClass extends mainActsClass{
             return er;
         }
         // check for other drivers
-        const verDrivers = await authDbObj.selectDriverNoPassDetails([driveInf[0].park_area, 'active', driver_id], " `park_area` = ? AND `status` = ? AND `driver_id` != ? ");
+        const verDrivers = await authDbObj.selectDriverNoPassDetails([driveInf[0].park_area, 'deleted', driver_id], " `park_area` = ? AND `status` != ? AND `driver_id` != ? ");
         if (!_.isArray(verDrivers)) {
             this.Mlogger.error(verDrivers);
             const er = {
