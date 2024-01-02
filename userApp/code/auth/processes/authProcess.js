@@ -289,7 +289,7 @@ class authProcess extends mainActsClass {
 
     }
 
-    verifyDriverPhoneCodeProcess = async (code, otp_id) => {
+    verifyDriverPhoneCodeProcess = async (code, otp_id, usex = 'out') => {
         if (typeof (code) !== 'number' || typeof (otp_id) !== 'string') {
             const er = {
                 state: 'error',
@@ -336,14 +336,24 @@ class authProcess extends mainActsClass {
         const infCo = {
             otp_id,
             status: 'used',
-            otp: 74684,
+            otp: this.createRandNubs(6),
         }
         const upAns = await authDbObj.updateStatusOfSignOtp(infCo);
         if (upAns.state !== 'success') {
             this.Mlogger.error(upAns);
         }
 
-        // return success
+        if (usex === 'internal') {
+            const sc = {
+                state: 'success',
+                data: 'Uthibitisho wa number ya simu umefanikiwa.',
+                verid: savAns.data.pverid,
+                user_id: otAns[0].user_id
+            }
+            return sc;
+        }
+
+        // return success user_id
         const sc = {
             state: 'success',
             data: 'Uthibitisho wa number ya simu umefanikiwa.',
@@ -788,6 +798,48 @@ class authProcess extends mainActsClass {
         return sc;
     }
 
+    logoutDriverProcess = async (info) => {
+        if (typeof (info.logKey) !== 'string' || typeof (info.logSess) !== 'string') {
+            const er = {
+                state: 'error',
+                data: 'Taarifa za kiusajili zimekosekana. Tafadhali ingia tena kwenye account yako kupata huduma hii.'
+            }
+            return er;
+        }
+        // check login status
+        const stAns = await authDbObj.selectLoginInfo([info.logKey, 'active'], " `login_key` = ? AND `status` = ? ");
+        if (!_.isArray(stAns)) {
+            this.Mlogger.error(stAns);
+            const er = {
+                state: 'error',
+                data: 'Tatizo kwenye mfumo limejitokeza wakati wa tafuta taarifa za kiusajili. Tafadhali jaribu tena'
+            }
+            return er;
+        } else if (_.isArray(stAns) && _.isEmpty(stAns)) {
+            const er = {
+                state: 'success',
+                data: 'Akaunti ilikuwa imeshatoka'
+            }
+            return er;
+        }
+
+        const upSt = await authDbObj.updateStatusLoginInfo({login_key: info.logKey, status: 'logout'});
+        if (upSt.state != 'success') {
+            this.Mlogger.error(upSt);
+            const er = {
+                state: 'error',
+                data: 'Mfumo unashindwa kukutoa kwenye akaunti yako. Tafadhali jaribu tena'
+            }
+            return er;
+        }
+
+        const sc = {
+            state: 'success',
+            data: 'Umefanikiwa kujitoa kwenye akaunti yako'
+        }
+        return sc;
+    }
+
 
     permissionCheckDriversProcess = async (info) => {
         if (typeof (info.perm_no) !== 'number') {
@@ -888,7 +940,59 @@ class authProcess extends mainActsClass {
         }
 
         return sc;
+    }
 
+    forgetPasswordInitProcess = async (phoneNumber = '') => {
+        // check if there is an account with the phone number
+        const dAns = await authDbObj.selectDriverDetails([phoneNumber, 'deleted'], " `phone` = ? AND `status` != ? ");
+        if (!_.isArray(dAns)) {
+            this.Mlogger.error(dAns);
+            const er = {
+                state: 'error',
+                data: 'Tatizo limejitokeza wakati wakupata taarifa zako. Tafadhali jaribu tena.'
+            }
+            return er;
+        } else if (_.isArray(dAns) && _.isEmpty(dAns)) {
+            const er = {
+                state: 'error',
+                data: 'Namba ya simu haipo tafadhali jisajili.'
+            }
+            return er;
+        }
+        // send login code.
+        const ansPhCO = await this.verifyDriverPhoneInitProcess(phoneNumber, dAns[0].driver_id, 'repeat');
+        return ansPhCO;
+    }
+
+
+    fogertPassLastProcess = async (info) => {
+        if (typeof (info.password) !== 'string' || typeof (info.code) !== 'number', typeof (info.otp_id)) {
+            const er = {
+                state: 'error',
+                data: 'Missing information. Try again'
+            }
+            return er;
+        }
+        // check if the code is correct.
+        const veAns = await this.verifyDriverPhoneCodeProcess(info.code, info.otp_id, 'internal');
+        if (veAns.state !== 'success') {
+            return veAns;
+        }
+        // update password.
+        const abs = await authDbObj.updateDriverPassword({ driver_id: veAns.user_id, password: info.password});
+        if (abs.state !== 'success') {
+            this.Mlogger.error(abs);
+            const er = {
+                state: 'error',
+                data: 'Mfumo umeshindwa kubadili neno lako la siri'
+            }
+            return er;
+        }
+        const sc = {
+            state: 'success',
+            data: 'Umefanikiwa kubadili neno la siri.'
+        }
+        return sc;
     }
 
 

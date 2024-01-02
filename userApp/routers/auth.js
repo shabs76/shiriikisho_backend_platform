@@ -47,7 +47,43 @@ router.post('/code/resend', async (req, res) => {
 
     const resAns = await authProcessObj.resendCodeProcess(req.body.otp_id);
     res.json(resAns);
-})
+});
+
+
+router.post('/logout', async (req, res) => {
+    const hedz = req.headers;
+    if (typeof (hedz.drlogkey) !== 'string' || typeof (hedz.drlogsess) !== 'string') {
+        const er = {
+            state: 'error',
+            data: 'Missing login details information',
+            adv: 'logout'
+        }
+        return res.json(er);
+    }
+    const info = {
+        logKey: hedz.drlogkey,
+        logSess: hedz.drlogsess
+    };
+    const anSlo = await authProcessObj.logoutDriverProcess(info);
+    res.json(anSlo);
+});
+
+router.post('/forget/pass/init', async (req, res) => {
+    if (typeof (req.body.phone) !== 'string') {
+        const er = {
+            state: 'error',
+            data: 'Namba ya simu inakosekana.Tafadhali weka number ya simu'
+        }
+        return res.json(er);
+    }
+    const anx = await authProcessObj.forgetPasswordInitProcess(req.body.phone);
+    res.json(anx);
+});
+
+router.post('/forget/pass/last', async (req, res) => {
+    const ansl = await authProcessObj.fogertPassLastProcess(req.body);
+    res.json(ansl);
+});
 
 const authRouter = router;
 export default authRouter;
