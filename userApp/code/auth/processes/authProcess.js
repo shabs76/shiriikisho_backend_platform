@@ -966,7 +966,7 @@ class authProcess extends mainActsClass {
 
 
     fogertPassLastProcess = async (info) => {
-        if (typeof (info.password) !== 'string' || typeof (info.code) !== 'number', typeof (info.otp_id)) {
+        if (typeof (info.password) !== 'string' || typeof (info.code) !== 'number' || typeof (info.otp_id) !== 'string') {
             const er = {
                 state: 'error',
                 data: 'Missing information. Try again'
