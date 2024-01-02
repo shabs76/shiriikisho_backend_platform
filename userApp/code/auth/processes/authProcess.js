@@ -205,23 +205,23 @@ class authProcess extends mainActsClass {
         }
 
         // send otp to user 
-        // const textInfo = {
-        //     phone,
-        //     sms: otp+' Itakuwa namba ya udhibitisho kwenye mfumo wa shirikisho.'
-        // }
-        // const sendTextAns = await this.sendNormalTexts(textInfo);
-        // if (sendTextAns.state !== 'success') {
-        //     const er = {
-        //         state: 'error',
-        //         data: 'Mfumo umeshindwa kutuma ujumbe uwa udhibitisho. Tafadhali jaribu tena'
-        //     }
-        //     return er;
-        // }
+        const textInfo = {
+            phone,
+            sms: otp+' Itakuwa namba ya udhibitisho kwenye mfumo wa shirikisho.'
+        }
+        const sendTextAns = await this.sendNormalTexts(textInfo);
+        if (sendTextAns.state !== 'success') {
+            const er = {
+                state: 'error',
+                data: 'Mfumo umeshindwa kutuma ujumbe uwa udhibitisho. Tafadhali jaribu tena'
+            }
+            return er;
+        }
 
         // return success with code to track verification
         const sc = {
             state: 'success',
-            data: 'Namba ya uthibitisho imetumwa kwenye number ya simu +'+phone+'-'+otp,
+            data: 'Namba ya uthibitisho imetumwa kwenye number ya simu +'+phone,
             otp_id: savOtp.data.otp_id
         }
         return sc;
