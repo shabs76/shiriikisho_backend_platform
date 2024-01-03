@@ -726,6 +726,14 @@ class authProcess extends mainActsClass {
             }
             return er;
         }
+        // check if driver details has been verified
+        if (dAns[0].status !== 'created' || dAns[0].status !== 'active') {
+            const er = {
+                state: 'error',
+                data: 'Huwezi kuingia kwenye mfumo mpaka taarifa zako zi hakikiwe. Tafadhali wasiliana na kiongozi wa kituo chako'
+            }
+            return er;
+        }
 
         // check password
         if (!bcrypt.compareSync(`${password}`, dAns[0].password)) {

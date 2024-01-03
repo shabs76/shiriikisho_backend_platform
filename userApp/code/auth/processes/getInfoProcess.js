@@ -56,20 +56,18 @@ class getInfoProcessClass extends mainActsClass{
     }
 
     getAllDriverInformation = async (driver_id) => {
-        const driverInf = await authDbObj.selectDriverDetails([driver_id, 'active'], " `driver_id` = ? AND `status` = ?");
+        const driverInf = await authDbObj.selectDriverDetails([driver_id, 'active', 'created'], " `driver_id` = ? AND (`status` = ? OR `status` = ?)");
         if (!_.isArray(driverInf)) {
             this.Mlogger.error(driverInf);
             const er = {
                 state: 'error',
                 data: 'An error occurred while fetching driver details',
-                adv: 'logout'
             }
             return er;
         } else if (_.isArray(driverInf) && _.isEmpty(driverInf)) {
             const er = {
                 state: 'error',
                 data: 'Taarifa za akaunti yako zinakosekana. Tafadhali jaribu tena baadae',
-                adv: 'logout'
             }
             return er;
         }
@@ -102,7 +100,7 @@ class getInfoProcessClass extends mainActsClass{
             this.Mlogger.error(uniformDet);
             driverOb.uniform = 'an error ecountered';
         } else if(_.isArray(uniformDet) && _.isEmpty(uniformDet)) {
-            driverOb.uniform = 'Haijahalalishwa';
+            driverOb.uniform = 'Haijathibitishwa';
         } else {
             driverOb.uniform = uniformDet[0].uniform_num;
         }
@@ -131,7 +129,7 @@ class getInfoProcessClass extends mainActsClass{
 
         // now fetch leadership type
         const letyNames = await authDbObj.selectLeaderTypes([ledInf[0].leader_type]);
-        if (_.isArray(letyNames)) {
+        if (!_.isArray(letyNames)) {
             this.Mlogger.error(letyNames);
             driverOb.parkName = parkInf[0].park_name;
             driverOb.leadership = 'Kiongozi';
@@ -145,7 +143,7 @@ class getInfoProcessClass extends mainActsClass{
             this.Mlogger.error(`Driver of id ${driver_id} has unknown leadership type`);
             driverOb.parkName = parkInf[0].park_name;
             driverOb.leadership = 'Kiongozi';
-            driverOb.leaderState = 'no';
+            driverOb.leaderState = 'yes';
             const sc = {
                 state: 'success',
                 data:  driverOb
@@ -155,6 +153,7 @@ class getInfoProcessClass extends mainActsClass{
 
         driverOb.parkName = parkInf[0].park_name;
         driverOb.leadership = letyNames[0].type_name;
+        driverOb.leaderState = 'yes';
         const sc = {
             state: 'success',
             data:  driverOb
