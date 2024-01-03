@@ -93,7 +93,7 @@ export class insertDbClass extends mainActsClass {
 
     addingdriversDetails = async (info) => {
         try {
-            const requireVals = ['fname', 'mname', 'lname', 'email', 'phone', 'password', 'dob', 'gender', 'relation', 'residence', 'park_area', 'vehicle_number', 'licence_number', 'tin_number', 'id_type', 'id_number', 'id_picture', 'passport'];
+            const requireVals = ['fname', 'mname', 'lname', 'email', 'phone', 'password', 'dob', 'gender', 'relation', 'residence', 'park_area', 'vehicle_number', 'licence_number', 'tin_number', 'id_type', 'id_number', 'id_picture', 'passport', 'insurance'];
             const reState = this.checkRequireValues(requireVals, info);
             if (typeof (reState.state) !== 'undefined' && reState.state === 'error') {
                 return reState;
@@ -101,8 +101,8 @@ export class insertDbClass extends mainActsClass {
             const driver_id = this.createRandChars(12, 'DRVER');
             const password = bcrypt.hashSync(info.password, 10);
             const [createAns] = await this.dbConn.query(`
-                INSERT INTO drivers(driver_id, fname, mname, lname, email, phone, password, dob, gender, relationship, residence, park_area, vehicle_number, licence_number, tin_number, id_type, id_number, id_picture, passport, status, driver_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, CURRENT_TIMESTAMP)
-            `,[driver_id, info.fname, info.mname, info.lname, info.email, info.phone, password, info.dob, info.gender, info.relation, info.residence, info.park_area, info.vehicle_number, info.licence_number, info.tin_number, info.id_type, info.id_number, info.id_picture, info.passport, 'created']
+                INSERT INTO drivers(driver_id, fname, mname, lname, email, phone, password, dob, gender, relationship, residence, park_area, vehicle_number, licence_number, tin_number, id_type, id_number, id_picture, passport, insurance, status, driver_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, CURRENT_TIMESTAMP)
+            `,[driver_id, info.fname, info.mname, info.lname, info.email, info.phone, password, info.dob, info.gender, info.relation, info.residence, info.park_area, info.vehicle_number, info.licence_number, info.tin_number, info.id_type, info.id_number, info.id_picture, info.passport, info.insurance, 'created']
             );
             this.Mlogger.debug(createAns);
             if (typeof (createAns.affectedRows) === 'number' && createAns.affectedRows > 0) {
