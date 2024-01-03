@@ -197,7 +197,7 @@ class getInfoProcessClass extends mainActsClass{
     }
 
     getOtherDriversMember = async (driver_id = '') => {
-        const driveInf = await authDbObj.selectDriverNoPassDetails([driver_id, 'active'], " `driver_id` = ? AND `status` = ?");
+        const driveInf = await authDbObj.selectDriverNoPassDetails([driver_id, 'active', 'created'], " `driver_id` = ? AND (`status` = ? OR `status` = ?)");
         if (!_.isArray(driveInf)) {
             this.Mlogger.error(driveInf);
             const er = {
