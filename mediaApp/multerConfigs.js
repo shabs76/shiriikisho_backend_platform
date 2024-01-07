@@ -46,11 +46,11 @@ export const imageUpload = multer({
   fileFilter: async (req, file, cb) => {
     // security check
     // check if proper headers are set
-    const hedz = req.headers;
-    if (typeof (hedz.logkey) !== 'string' || typeof (hedz.logsess) !== 'string' || typeof (hedz.keytype) !== 'string') {
-      mediaAccessObj.Mlogger.error({state: 'error', data: 'Error missing authorization details'})
-      cb(new Error('Unauthorized: Missing authorization info.'));
-    }
+    // const hedz = req.headers;
+    // if (typeof (hedz.logkey) !== 'string' || typeof (hedz.logsess) !== 'string' || typeof (hedz.keytype) !== 'string') {
+    //   mediaAccessObj.Mlogger.error({state: 'error', data: 'Error missing authorization details'})
+    //   cb(new Error('Unauthorized: Missing authorization info.'));
+    // }
     cb(null, true); 
     // const ansLog = await mediaAccessObj.uploadImageAuthChecker(hedz.logkey, hedz.logsess, hedz.keytype);
     // mediaAccessObj.Mlogger.debug(ansLog);

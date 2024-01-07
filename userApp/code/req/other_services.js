@@ -40,7 +40,7 @@ export class otherServiceApiRequest {
             state: 'error',
             data: 'An error has occurred while trying to check admins'
         }
-        ansBck = await axios.post('https://admins.shirikisho.co.tz'+subLink, data, {
+        ansBck = await axios.post(process.env.ADMIN_SERVICE_LINK+subLink, data, {
             headers: {
                 'Content-Type': 'application/json',
                 'servicename': 'userService',

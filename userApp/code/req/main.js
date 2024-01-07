@@ -21,6 +21,9 @@ export class mainActsClass extends otherServiceApiRequest {
             case 'gene':
                 bd = process.env.MYSQL_DATABASE_AUTH;
                 return bd;
+            case 'old':
+                bd = 'kisho_old';
+                return bd;
             default:
                 return bd;
         }
@@ -118,19 +121,23 @@ export class mainActsClass extends otherServiceApiRequest {
 
     checkRequireValues = (reqVals = [], Vals, mode= 'required') => {
         const vals = {};
-        reqVals.map((reqVal) => {
-            if (typeof (Vals[reqVal]) === 'undefined' && mode === 'required') {
-                const erro = {
+        const errors = reqVals.map(reqVal => {
+            if (typeof Vals[reqVal] === 'undefined' && mode === 'required') {
+                return {
                     state: 'error',
-                    data: reqVal+' is missing',
+                    data: reqVal + ' is missing',
                 };
-                return erro;
-            } else if (typeof (Vals[reqVal]) === 'undefined' && mode !== 'required') {
+            } else if (typeof Vals[reqVal] === 'undefined' && mode !== 'required') {
                 vals[reqVal] = 'notset';
             } else {
                 vals[reqVal] = Vals[reqVal];
             }
-        });
+            return undefined; // To account for non-error iterations
+        }).filter(error => error !== undefined); // Filter out undefined values
+
+        if (errors.length > 0) {
+            return errors[0]; // Return array of errors
+        }
         return vals;
     }
     isURL = (str) => {
@@ -240,8 +247,11 @@ export class mainActsClass extends otherServiceApiRequest {
         return password;
     }
 
-    padNumber(number, paddN = 3) {
+    padNumber = (number, paddN = 3) =>  {
         return String(number).padStart(paddN, '0');
+    }
+    removeSpaces = (str) =>  {
+        return str.replace(/\s/g, '');
     }
 }
 

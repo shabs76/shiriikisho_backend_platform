@@ -193,14 +193,15 @@ export class mainProssClass extends mainActsClass{
         } else if (_.isArray(adminD) && _.isEmpty(adminD)) {
             const er = {
                 state: 'error',
-                data: 'Wrong phone number or password. Please check your credentials and try again'
+                data: 'Wrong phone number or password. Please check your credentials and try again-'
             }
             return er;
         }
 
         const admin = adminD[0];
         // now check password for match
-        if (!bcrypt.compareSync(signInfo.password, admin.password)) {
+        const pasAns = await bcrypt.compare(signInfo.password, admin.password);
+        if (!pasAns) {
             const err = {
                 state: 'error',
                 data: 'Wrong phone number or password. Please check your credentials and try again'

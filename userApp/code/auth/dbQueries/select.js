@@ -36,7 +36,7 @@ export class selectDBClass extends insertDbClass{
     }
 
     selectParkAreasDetails = async (whereArr = [''], subquery = " `park_id` = ?") => {
-        const ql = "SELECT `park_id`, `park_name`, `park_number`, `last_driver_number`,`park_size`, `vehicle_type`, `region`, `district`, `ward`, `status`, `park_date` FROM `park_areas` WHERE "+subquery;
+        const ql = "SELECT `park_id`, `park_name`, `park_number`, `last_driver_number`,`park_size`, `vehicle_type`, `ward`,`owner`, `status`, `park_date` FROM `park_areas` WHERE "+subquery;
         const ans = await this.runQuery(whereArr, ql);
         return ans;
     }
@@ -83,6 +83,30 @@ export class selectDBClass extends insertDbClass{
         return ans;
     }
 
+    selectCountriesDetails = async (whereArr = [''], subquery = " `country_id` != ? ") => {
+        const ql = "SELECT `country_id`, `country_name`, `country_code`, `country_date` FROM `countries` WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
+    selectRegionsDetails = async (whereArr = [''], subquery = " `region_id` != ? ") => {
+        const ql = "SELECT `region_id`, `region_name`, `region_code`, `country_id`, `region_date` FROM `regions` WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
+    selectDistrictDetails = async (whereArr = [''], subquery = " `district_id` != ? ") => {
+        const ql = "SELECT `district_id`, `district_name`, `district_code`, `region_id`, `district_date` FROM `districts` WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
+    selectWardsDetails = async (whereArr = [''], subquery = " `ward_id` != ? ") => {
+        const ql = "SELECT `ward_id`, `ward_name`, `ward_code`, `district_id`, `ward_date` FROM `wards` WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
     // relationships starts here.
 
     selectLeaderTypesPermissions = async (whereArr = [''], subquery = " `rels_id` = ?") => {
@@ -97,9 +121,49 @@ export class selectDBClass extends insertDbClass{
         return ans;
     }
 
+    selectAllLocationDetailsUsingWard = async (whereArr = [''], subquery = " `ward_id` = ?") => {
+        const ql = "SELECT `ward_id`, `ward_name`, `ward_code`, `district_name`, `district_code`, `region_name`, `region_code`, `country_name`, `country_code` FROM `wards` INNER JOIN districts ON districts.district_id = wards.district_id INNER JOIN regions ON regions.region_id = districts.region_id INNER JOIN countries ON countries.country_id = regions.country_id  WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
+    OldgetDistWards = async (whereArr = [''], subquery = " districts.name = ? ") => {
+        const ql = "SELECT wards.*, districts.name AS distName FROM `wards` INNER JOIN districts ON wards.district_id = districts.id WHERE "+subquery;
+        const ans = await this.TemprunQuery(whereArr, ql);
+        return ans;
+    }
+    // 
+    OldgetVituo = async (whereArr = [''], subquery = " vituo.id != ?") => {
+        const ql = "SELECT vituo.*, wards.name AS ward_name, districts.name AS dist_name FROM `vituo` INNER JOIN wards ON wards.id = vituo.ward INNER JOIN districts ON districts.id = vituo.district_id WHERE "+subquery;
+        const ans = await this.TemprunQuery(whereArr, ql);
+        return ans;
+    }
+    OldgetDrivers = async (whereArr = [''], subquery = " customers.id != ?") => {
+        const ql = "SELECT `jina`, `boda_namba`, `kituo`, `dob`, `current_kata`, `simu`, `namba_kitambulisho`, `leseni`, `picha` FROM `customers` WHERE  "+subquery;
+        const ans = await this.TemprunQuery(whereArr, ql);
+        return ans;
+    }
+    
     runQuery = async (searchArr, Query) => {
         try {
             const results = await this.dbConn.query(Query, searchArr);
+            const rows = results[0];
+            return rows;
+        } catch(error) {
+            const erro = {
+                status: 'error',
+                data: 'Unable to fetch data',
+            }
+            this.Mlogger.error(error);
+            return erro;
+        }
+    }
+
+    TemprunQuery = async (searchArr, Query) => {
+        try {
+            const datbase = this.dbNames('old');
+            const bbg = this.connv(datbase);
+            const results = await bbg.query(Query, searchArr);
             const rows = results[0];
             return rows;
         } catch(error) {

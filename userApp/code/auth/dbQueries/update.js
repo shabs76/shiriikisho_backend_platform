@@ -255,13 +255,13 @@ export class updateDbClass extends selectDBClass {
 
     updateParkDetails = async (info) => {
         try{
-            const requireVals = ['park_id', 'park_name','park_size', 'vehicle_type', 'region', 'district', 'ward'];
+            const requireVals = ['park_id', 'park_name','park_size', 'vehicle_type', 'ward'];
             const reState = this.checkRequireValues(requireVals, info);
             if (typeof (reState.state) !== 'undefined' && reState.state === 'error') {
                 return reState;
             }
 
-            const qlup = "UPDATE `park_areas` SET `park_name`=?,`park_size`=?,`vehicle_type`=?,`region`=?,`district`=?,`ward`=? WHERE `park_id` = ?";
+            const qlup = "UPDATE `park_areas` SET `park_name`=?,`park_size`=?,`vehicle_type`=?,`ward`=? WHERE `park_id` = ?";
             const [ansUpdt] = await this.dbConn.query(qlup, [info.park_name, info.park_size, info.vehicle_type, info.region, info.district, info.ward, info.park_id]);
             if (typeof (ansUpdt.affectedRows) === 'number' && ansUpdt.affectedRows > 0) {
                 const suc = {

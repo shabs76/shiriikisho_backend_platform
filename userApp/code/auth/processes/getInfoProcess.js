@@ -7,6 +7,80 @@ class getInfoProcessClass extends mainActsClass{
         super();
     }
 
+    
+    getRegionsList = async () => {
+        const regsx = await authDbObj.selectRegionsDetails();
+        if (!_.isArray(regsx)) {
+            this.Mlogger.error(regsx);
+            const er = {
+                state: 'error',
+                data: 'An error has occurred while fetching regions'
+            }
+            return er;
+        } else if (_.isArray(regsx) && _.isEmpty(regsx)) {
+            const er = {
+                state: 'error',
+                data: 'Hakuna mkoa unayotoa huduma kwa sasa. Tafadhali jaribu baadae'
+            }
+            return er;
+        }
+
+        const sc = {
+            state: 'success',
+            data: regsx
+        }
+        return sc;
+    }
+
+    getDistrictList = async () => {
+        const distx = await authDbObj.selectDistrictDetails();
+        if (!_.isArray(distx)) {
+            this.Mlogger.error(distx);
+            const er = {
+                state: 'error',
+                data: 'An error has occurred while fetching districts'
+            }
+            return er;
+        } else if (_.isArray(distx) && _.isEmpty(distx)) {
+            const er = {
+                state: 'error',
+                data: 'Hakuna wilaya inayotoa huduma kwa sasa. Tafadhali jaribu baadae'
+            }
+            return er;
+        }
+
+        const sc = {
+            state: 'success',
+            data: distx
+        }
+        return sc;
+    }
+
+    getWardsList = async () => {
+        const wards = await authDbObj.selectWardsDetails();
+        if (!_.isArray(wards)) {
+            this.Mlogger.error(wards);
+            const er = {
+                state: 'error',
+                data: 'An error has occurred while fetching districts'
+            }
+            return er;
+        } else if (_.isArray(wards) && _.isEmpty(wards)) {
+            const er = {
+                state: 'error',
+                data: 'Hakuna inayo inayotoa huduma kwa sasa. Tafadhali jaribu baadae'
+            }
+            return er;
+        }
+
+        const sc = {
+            state: 'success',
+            data: wards
+        }
+        return sc;
+    }
+
+
     getParkAreaList = async () => {
         const parks = await authDbObj.selectParkAreasDetails(['active'], " `status` = ?");
         if (!_.isArray(parks)) {

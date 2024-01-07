@@ -14,15 +14,15 @@ export class insertDbClass extends mainActsClass {
 
     addingParkAreas = async (info) => {
         try {
-            const requireVals = ['park_name', 'park_number', 'park_size', 'vehicle_type', 'region', 'district', 'ward'];
+            const requireVals = ['park_name', 'park_number', 'park_size', 'vehicle_type', 'ward_id', 'owner'];
             const reState = this.checkRequireValues(requireVals, info);
             if (typeof (reState.state) !== 'undefined' && reState.state === 'error') {
                 return reState;
             }
             const park_id = this.createRandChars(12, 'PARK');
             const [createAns] = await this.dbConn.query(`
-                INSERT INTO park_areas(park_id, park_name, park_number, last_driver_number, park_size, vehicle_type, region, district, ward, status, park_date) VALUES (?,?,?,?,?,?,?,?,?,?, CURRENT_TIMESTAMP)
-            `,[park_id, info.park_name, info.park_number, 0, info.park_size, info.vehicle_type, info.region, info.district, info.ward, 'active' ]
+                INSERT INTO park_areas(park_id, park_name, park_number, last_driver_number, park_size, vehicle_type, ward, owner, status, park_date) VALUES (?,?,?,?,?,?,?,?,?, CURRENT_TIMESTAMP)
+            `,[park_id, info.park_name, info.park_number, 0, info.park_size, info.vehicle_type, info.ward_id, info.owner, 'active' ]
             );
             this.Mlogger.debug(createAns);
             if (typeof (createAns.affectedRows) === 'number' && createAns.affectedRows > 0) {
@@ -451,6 +451,163 @@ export class insertDbClass extends mainActsClass {
             const Erro = {
                 state: "error",
                 data: 'Could not add verified phone number. #data error',
+            }
+            this.Mlogger.error(error);
+            return Erro;
+        }
+    }
+
+    addingCountriesDetails = async (info) => {
+        try {
+            const requireVals = ['country', 'code'];
+            const reState = this.checkRequireValues(requireVals, info);
+            if (typeof (reState.state) !== 'undefined' && reState.state === 'error') {
+                return reState;
+            }
+            const country_id = this.createRandChars(12, 'CONTRY');
+            const [createAns] = await this.dbConn.query(`
+                INSERT INTO countries(country_id, country_name, country_code, country_date) VALUES (?,?,?, CURRENT_TIMESTAMP)
+            `,[country_id, info.country, info.code]
+            );
+            this.Mlogger.debug(createAns);
+            if (typeof (createAns.affectedRows) === 'number' && createAns.affectedRows > 0) {
+                const suc = {
+                    state: 'success',
+                    data: {
+                        info:'A country was successfully created',
+                        country_id
+                    },
+                }
+                return suc;
+            }
+    
+            const Erro = {
+                state: "error",
+                data: 'Could not add country. #unkown',
+            }
+            return Erro;
+        } catch (error) {
+            const Erro = {
+                state: "error",
+                data: 'Could not add country. #data error',
+            }
+            this.Mlogger.error(error);
+            return Erro;
+        }
+    }
+
+    addingRegionsDetails = async (info) => {
+        try {
+            const requireVals = ['region','country_id', 'code'];
+            const reState = this.checkRequireValues(requireVals, info);
+            if (typeof (reState.state) !== 'undefined' && reState.state === 'error') {
+                return reState;
+            }
+            const reg_id = this.createRandChars(12, 'REGIN');
+            const [createAns] = await this.dbConn.query(`
+                INSERT INTO regions(region_id, region_name, region_code, country_id, region_date) VALUES (?,?,?,?, CURRENT_TIMESTAMP)
+            `,[reg_id,info.region,info.code, info.country_id]
+            );
+            this.Mlogger.debug(createAns);
+            if (typeof (createAns.affectedRows) === 'number' && createAns.affectedRows > 0) {
+                const suc = {
+                    state: 'success',
+                    data: {
+                        info:'A region was successfully created',
+                        reg_id
+                    },
+                }
+                return suc;
+            }
+    
+            const Erro = {
+                state: "error",
+                data: 'Could not add region. #unkown',
+            }
+            return Erro;
+        } catch (error) {
+            const Erro = {
+                state: "error",
+                data: 'Could not add region. #data error',
+            }
+            this.Mlogger.error(error);
+            return Erro;
+        }
+    }
+
+    addingDistrictDetails = async (info) => {
+        try {
+            const requireVals = ['district','region_id', 'code'];
+            const reState = this.checkRequireValues(requireVals, info);
+            console.log(reState);
+            if (typeof (reState.state) !== 'undefined' && reState.state === 'error') {
+                return reState;
+            }
+            const dist_id = this.createRandChars(12, 'DIST');
+            const [createAns] = await this.dbConn.query(`
+                INSERT INTO districts(district_id, district_name, district_code, region_id, district_date) VALUES (?,?,?,?, CURRENT_TIMESTAMP)
+            `,[dist_id,info.district,info.code, info.region_id]
+            );
+            this.Mlogger.debug(createAns);
+            if (typeof (createAns.affectedRows) === 'number' && createAns.affectedRows > 0) {
+                const suc = {
+                    state: 'success',
+                    data: {
+                        info:'A district was successfully created',
+                        dist_id
+                    },
+                }
+                return suc;
+            }
+    
+            const Erro = {
+                state: "error",
+                data: 'Could not add district. #unkown',
+            }
+            return Erro;
+        } catch (error) {
+            const Erro = {
+                state: "error",
+                data: 'Could not add district. #data error',
+            }
+            this.Mlogger.error(error);
+            return Erro;
+        }
+    }
+
+    addingWardDetails = async (info) => {
+        try {
+            const requireVals = ['ward','district_id', 'code'];
+            const reState = this.checkRequireValues(requireVals, info);
+            if (typeof (reState.state) !== 'undefined' && reState.state === 'error') {
+                return reState;
+            }
+            const ward_id = this.createRandChars(12, 'WARD');
+            const [createAns] = await this.dbConn.query(`
+                INSERT INTO wards(ward_id, ward_name, ward_code, district_id, ward_date) VALUES (?,?,?,?, CURRENT_TIMESTAMP)
+            `,[ward_id,info.ward,info.code, info.district_id]
+            );
+            this.Mlogger.debug(createAns);
+            if (typeof (createAns.affectedRows) === 'number' && createAns.affectedRows > 0) {
+                const suc = {
+                    state: 'success',
+                    data: {
+                        info:'A ward was successfully created',
+                        ward_id
+                    },
+                }
+                return suc;
+            }
+    
+            const Erro = {
+                state: "error",
+                data: 'Could not add ward. #unkown',
+            }
+            return Erro;
+        } catch (error) {
+            const Erro = {
+                state: "error",
+                data: 'Could not add ward. #data error',
             }
             this.Mlogger.error(error);
             return Erro;

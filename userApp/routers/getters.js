@@ -7,6 +7,19 @@ const router = express.Router();
 router.use(express.json());
 
 router.get('/reqistration/info', async (req, res) => {
+    // get regions
+    const regs = await GettorObj.getRegionsList();
+    if (regs.state !== 'success') {
+        return res.json(regs);
+    }
+    const distx = await GettorObj.getDistrictList();
+    if (distx.state !== 'success') {
+        return res.json(distx);
+    }
+    const wards = await GettorObj.getWardsList();
+    if (wards.state !== 'success') {
+        return res.json(wards);
+    }
     // get kituo details
     const parks = await GettorObj.getParkAreaList();
     if (parks.state !== 'success') {
@@ -22,7 +35,10 @@ router.get('/reqistration/info', async (req, res) => {
         state: 'success',
         data: {
             vehilces: vehilces.data,
-            parks: parks.data
+            parks: parks.data,
+            regions: regs.data,
+            districts: distx.data,
+            wards: wards.data
         }
     }
     res.json(com);

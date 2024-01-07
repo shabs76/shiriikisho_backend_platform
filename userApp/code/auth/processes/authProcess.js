@@ -36,7 +36,44 @@ class authProcess extends mainActsClass {
         if (permCheck.state !== 'success') {
             return permCheck;
         }
+        if (typeof (data.ward_id) !== 'string') {
+            const er = {
+                state: 'error',
+                data: 'Ward information does not exits'
+            }
+            return er;
+        }
+        // pull location details to get number and ward -id
+        const seleWard = await authDbObj.selectAllLocationDetailsUsingWard([data.ward_id]);
+        if (!_.isArray(seleWard)) {
+            this.Mlogger.error(seleWard);
+            const er = {
+                state: 'error',
+                data: 'An error has occured while trying to access location details of the parking area.'
+            }
+            return er;
+        } else if (_.isArray(seleWard) && _.isEmpty(seleWard)) {
+            const er = {
+                state: 'error',
+                data: 'The ward does not exist. Please check and try again'
+            }
+            return er;
+        }
 
+        // select number of parks in that in the ward area
+        const nng = await authDbObj.selectParkAreasDetails([data.ward_id], " `ward` = ?");
+        if (!_.isArray(nng)) {
+            this.Mlogger.error(nng);
+            const er = {
+                state: 'error',
+                data: 'Unable to get park number due to an error.'
+            }
+            return er;
+        }
+
+        // set number 
+        const pakNm = seleWard[0].region_code+seleWard[0].district_code+seleWard[0].ward_code+'-'+this.padNumber(nng.length+1,3);
+        data.park_number = pakNm;
         // now add park area
         const parkAns = await authDbObj.addingParkAreas(data);
         return parkAns;
@@ -384,10 +421,10 @@ class authProcess extends mainActsClass {
         }
 
         // check if phone number verification exists and get phone number
-        const veriPhone = await this.checkForValidVerifiedPhoneIdProcess(data.verid);
-        if (veriPhone.state !== 'success') {
-            return veriPhone;
-        }
+        // const veriPhone = await this.checkForValidVerifiedPhoneIdProcess(data.verid); 
+        // if (veriPhone.state !== 'success') {
+        //     return veriPhone;
+        // }
         data.phone = veriPhone.phone;
         const regAns = await authDbObj.addingdriversDetails(data);
         return regAns;
@@ -1004,6 +1041,69 @@ class authProcess extends mainActsClass {
         return sc;
     }
 
+    registerNewCountryProcess = async (data) => {
+        const permInf = {
+            logKey: data.logKey,
+            logSess: data.logSess,
+            req_perm: 110,
+            req_type: 310
+        }
+        const permCheck = await this.checkAdminPermissions(permInf);
+        if (permCheck.state !== 'success') {
+            return permCheck;
+        }
+        const ansxc = await authDbObj.addingCountriesDetails(data);
+        return ansxc;
+    }
+
+    registerNewRegionProcess = async (data) => {
+        const permInf = {
+            logKey: data.logKey,
+            logSess: data.logSess,
+            req_perm: 110,
+            req_type: 310
+        }
+        const permCheck = await this.checkAdminPermissions(permInf);
+        if (permCheck.state !== 'success') {
+            return permCheck;
+        }
+        // now add region information
+        const Ansc = await authDbObj.addingRegionsDetails(data);
+        return Ansc;
+    }
+
+
+    registerNewDistrictProcess = async (data) => {
+        const permInf = {
+            logKey: data.logKey,
+            logSess: data.logSess,
+            req_perm: 110,
+            req_type: 310
+        }
+        const permCheck = await this.checkAdminPermissions(permInf);
+        if (permCheck.state !== 'success') {
+            return permCheck;
+        }
+        // now add new district information
+        const anx = await authDbObj.addingDistrictDetails(data);
+        return anx;
+    }
+
+    registerNewWardProcess = async (data) => {
+        const permInf = {
+            logKey: data.logKey,
+            logSess: data.logSess,
+            req_perm: 110,
+            req_type: 310
+        }
+        const permCheck = await this.checkAdminPermissions(permInf);
+        if (permCheck.state !== 'success') {
+            return permCheck;
+        }
+        // now add new district information
+        const ansc = await authDbObj.addingWardDetails(data);
+        return ansc;
+    }
 
 }
 

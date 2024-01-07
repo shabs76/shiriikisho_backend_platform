@@ -118,19 +118,23 @@ export class mainActsClass extends totpAuth {
 
     checkRequireValues = (reqVals = [], Vals, mode= 'required') => {
         const vals = {};
-        reqVals.map((reqVal) => {
-            if (typeof (Vals[reqVal]) === 'undefined' && mode === 'required') {
-                const erro = {
+        const errors = reqVals.map(reqVal => {
+            if (typeof Vals[reqVal] === 'undefined' && mode === 'required') {
+                return {
                     state: 'error',
-                    data: reqVal+' is missing',
+                    data: reqVal + ' is missing',
                 };
-                return erro;
-            } else if (typeof (Vals[reqVal]) === 'undefined' && mode !== 'required') {
+            } else if (typeof Vals[reqVal] === 'undefined' && mode !== 'required') {
                 vals[reqVal] = 'notset';
             } else {
                 vals[reqVal] = Vals[reqVal];
             }
-        });
+            return undefined; // To account for non-error iterations
+        }).filter(error => error !== undefined); // Filter out undefined values
+
+        if (errors.length > 0) {
+            return errors[0]; // Return array of errors
+        }
         return vals;
     }
     isURL = (str) => {

@@ -59,8 +59,7 @@ app.get('/qrcode', async (req, res) => {
     const configUri = `otpauth://${otpType}/${issuer}:ADMiNS?algorithm=${algorithm}&digits=${digits}&period=${period}&issuer=${issuer}&secret=${secret}`;
     res.setHeader('Content-Type', 'image/png');
     otpauth: qrcode.toFileStream(res, configUri);
-})
-
+});
 
 app.listen(5700, () =>
   console.log(`Admin app listening on port 5200!`),
