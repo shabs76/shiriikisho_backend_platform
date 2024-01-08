@@ -421,10 +421,10 @@ class authProcess extends mainActsClass {
         }
 
         // check if phone number verification exists and get phone number
-        // const veriPhone = await this.checkForValidVerifiedPhoneIdProcess(data.verid); 
-        // if (veriPhone.state !== 'success') {
-        //     return veriPhone;
-        // }
+        const veriPhone = await this.checkForValidVerifiedPhoneIdProcess(data.verid); 
+        if (veriPhone.state !== 'success') {
+            return veriPhone;
+        }
         data.phone = veriPhone.phone;
         const regAns = await authDbObj.addingdriversDetails(data);
         return regAns;
