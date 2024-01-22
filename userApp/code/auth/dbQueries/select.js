@@ -23,6 +23,12 @@ export class selectDBClass extends insertDbClass{
         return ans;
     }
 
+    selectDriverNumberMontly = async (whereArr = ['2023-08-07'], subquery = "driver_date >= ?") => {
+        const ql = "SELECT MONTH(driver_date) AS month, YEAR(driver_date) AS year, COUNT(*) AS drivers FROM drivers WHERE "+subquery+" GROUP BY YEAR(driver_date), MONTH(driver_date)";
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
     selectLeaderTypes = async (whereArr = [''], subquery = " `type_id` = ?") => {
         const ql = "SELECT `type_id`, `type_name`, `type_number`, `type_date` FROM `leadership_types` WHERE "+subquery;
         const ans = await this.runQuery(whereArr, ql);
@@ -37,6 +43,12 @@ export class selectDBClass extends insertDbClass{
 
     selectParkAreasDetails = async (whereArr = [''], subquery = " `park_id` = ?") => {
         const ql = "SELECT `park_id`, `park_name`, `park_number`, `last_driver_number`,`park_size`, `vehicle_type`, `ward`,`owner`, `status`, `park_date` FROM `park_areas` WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
+    selectParkNumbers = async (whereArr = [''], subquery = " `park_id` = ? ") => {
+        const ql = "SELECT COUNT(park_id) AS parks FROM `park_areas` WHERE "+subquery;
         const ans = await this.runQuery(whereArr, ql);
         return ans;
     }
@@ -127,43 +139,21 @@ export class selectDBClass extends insertDbClass{
         return ans;
     }
 
-    OldgetDistWards = async (whereArr = [''], subquery = " districts.name = ? ") => {
-        const ql = "SELECT wards.*, districts.name AS distName FROM `wards` INNER JOIN districts ON wards.district_id = districts.id WHERE "+subquery;
-        const ans = await this.TemprunQuery(whereArr, ql);
+    selectDriversBasedOnMajorLocationNames = async (whereArr = [''], subquery = " `district_name` = ? ") => {
+        const ql = "SELECT drivers.*, region_name, district_name, ward_name FROM `drivers` INNER JOIN park_areas ON park_areas.park_id = drivers.park_area INNER JOIN wards ON wards.ward_id = park_areas.ward INNER JOIN districts ON districts.district_id = wards.district_id INNER JOIN regions ON regions.region_id = districts.region_id  WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
         return ans;
     }
-    // 
-    OldgetVituo = async (whereArr = [''], subquery = " vituo.id != ?") => {
-        const ql = "SELECT vituo.*, wards.name AS ward_name, districts.name AS dist_name FROM `vituo` INNER JOIN wards ON wards.id = vituo.ward INNER JOIN districts ON districts.id = vituo.district_id WHERE "+subquery;
-        const ans = await this.TemprunQuery(whereArr, ql);
-        return ans;
-    }
-    OldgetDrivers = async (whereArr = [''], subquery = " customers.id != ?") => {
-        const ql = "SELECT `jina`, `boda_namba`, `kituo`, `dob`, `current_kata`, `simu`, `namba_kitambulisho`, `leseni`, `picha` FROM `customers` WHERE  "+subquery;
-        const ans = await this.TemprunQuery(whereArr, ql);
+
+    selectDriversNumberBasedOnMajorLocationNames = async (whereArr = [''], subquery = " `district_name` = ? ") => {
+        const ql = "SELECT COUNT(driver_id) AS drivers FROM `drivers` INNER JOIN park_areas ON park_areas.park_id = drivers.park_area INNER JOIN wards ON wards.ward_id = park_areas.ward INNER JOIN districts ON districts.district_id = wards.district_id INNER JOIN regions ON regions.region_id = districts.region_id  WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
         return ans;
     }
     
     runQuery = async (searchArr, Query) => {
         try {
             const results = await this.dbConn.query(Query, searchArr);
-            const rows = results[0];
-            return rows;
-        } catch(error) {
-            const erro = {
-                status: 'error',
-                data: 'Unable to fetch data',
-            }
-            this.Mlogger.error(error);
-            return erro;
-        }
-    }
-
-    TemprunQuery = async (searchArr, Query) => {
-        try {
-            const datbase = this.dbNames('old');
-            const bbg = this.connv(datbase);
-            const results = await bbg.query(Query, searchArr);
             const rows = results[0];
             return rows;
         } catch(error) {

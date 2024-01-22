@@ -366,6 +366,7 @@ export class mainProssClass extends mainActsClass{
 
     verifyingLoginsProcess = async (logKey, logSess) => {
         const logUserDat = await authDbObj.selectAdminWithLogins([logKey], " `login_key` = ? AND `exipire_date` > CURRENT_TIMESTAMP");
+        console.log(logKey);
         if (!_.isArray(logUserDat)) {
             this.Mlogger.error(logUserDat);
             const er = {
@@ -376,7 +377,8 @@ export class mainProssClass extends mainActsClass{
         } else if (_.isArray(logUserDat) && _.isEmpty(logUserDat)) {
             const er = {
                 state: 'error',
-                data: 'Invalid user details, you have to login'
+                data: 'Invalid user details, you have to login',
+                ky: 'logout'
             }
             return er;
         }
@@ -385,7 +387,8 @@ export class mainProssClass extends mainActsClass{
         if (!bcrypt.compareSync(logSess, logUserDat[0].login_session)) {
             const er = {
                 state: 'error',
-                data: 'Invalid session'
+                data: 'Invalid session',
+                ky: 'logout'
             }
             return er;
         }
@@ -451,6 +454,33 @@ export class mainProssClass extends mainActsClass{
             user_id: admin_id
         }
 
+        return sc;
+    }
+
+    logoutAdminAuthProcess = async (logKey, logSess) => {
+        const logDet = await this.verifyingLoginsProcess(logKey, logSess);
+        if (logDet.state !== 'success' && typeof (logDet.ky) !== 'string') {
+            return logDet;
+        } else if (logDet.state !== 'success' && typeof (logDet.ky) === 'string') {
+            const er = {
+                state: 'success',
+                data: 'Logout was completed'
+            }
+            return er;
+        }
+        // use normal update methods
+        const logUpd = await authDbObj.updateAdminLogins({login_key: logKey, status: 'logout'});
+        if (logUpd.state !== 'success') {
+            const er = {
+                state: 'error',
+                data: 'Could not logout your account. Please try again'
+            }
+            return er;
+        }
+        const sc = {
+            state: 'success',
+            data: 'You have successfully logout your account'
+        }
         return sc;
     }
 

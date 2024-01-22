@@ -9,7 +9,7 @@
         "start": "node index.js"
     },
     "dependencies": {
-        "axios": "^1.4.0",
+        "axios": "^1.6.5",
         "base32-decode": "^1.0.0",
         "base32-encode": "^2.0.0",
         "bcrypt": "^5.1.1",

@@ -6,6 +6,7 @@ import driverRouter from './routers/drivers.js';
 import authRouter from './routers/auth.js';
 import otherRouter from './routers/others.js';
 import geterRouter from './routers/getters.js';
+import AdGetRouter from './routers/adGetter.js';
 
 const app = express();
 
@@ -17,10 +18,13 @@ app.use('/drivers', driverRouter);
 app.use('/auth', authRouter);
 app.use('/others', otherRouter);
 app.use('/get', geterRouter);
+app.use('/adget', AdGetRouter);
 
 app.get('/', (req, res) => {
   res.json('Hello World Users!');
 });
+
+//hg  
 
 app.listen(5100, () =>
   console.log(`User app listening on port 5100!`),

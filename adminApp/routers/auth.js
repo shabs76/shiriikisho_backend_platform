@@ -45,14 +45,26 @@ router.post('/login/verification', async (req, res) => {
         res.cookie("loginSess", verAns.logSess, {
             maxAge: 1000*60*60, 
             sameSite: 'none',
+            httpOnly: true,
+            domain: 'localhost:3000'
         });
         res.cookie("loginKey", verAns.logKey, {
             maxAge: 1000*60*60, 
             sameSite: 'none',
+            httpOnly: true,
+            domain: 'localhost:3000'
         });
     }
     res.json(verAns);
 });
+
+router.post('/logout', async (req, res) => {
+    if (typeof (req.headers.logkey) !== 'string' || typeof (req.headers.logsess) !== 'string') {
+        return res.json({ state: 'error', data: 'You need to login to access this service', adv: 'logout' });
+    }
+    const logAns = await mainProcsObj.logoutAdminAuthProcess(req.headers.logkey, req.headers.logsess);
+    res.json(logAns);
+})
 
 const authRouter = router;
 export default authRouter;
