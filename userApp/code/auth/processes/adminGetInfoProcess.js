@@ -270,7 +270,7 @@ class AdminGetter extends mainActsClass {
             { park_name: 'notset', members: 0 },
             { park_name: 'notset', members: 0 } 
         ];
-        const topParks = await authDbObj.selectParkAreasDetails(['active'], " `status` = ? ORDER BY park_date DESC LIMIT 0, 4");
+        const topParks = await authDbObj.selectParkAreasDetails(['active'], " `status` = ? ORDER BY last_driver_number DESC LIMIT 0, 4");
         if (!_.isArray(topParks)) {
             this.Mlogger.error(topParks);
             return topParkx;
@@ -281,7 +281,7 @@ class AdminGetter extends mainActsClass {
         const prakes = [];
         for (let index = 0; index < topParks.length; index++) {
             const park = topParks[index];
-            const driversN = await authDbObj.selectDriverNumbers(['active'], " `status` = ? ");
+            const driversN = await authDbObj.selectDriverNumbers(['active', 'created', park.park_id], " (`status` = ? OR `status` = ?) AND `park_area` = ? ");
             if (!_.isArray(driversN)) {
                 this.Mlogger.error(driversN);
                 prakes.push({ park_name: park.park_name, members: 0.5 })

@@ -20,7 +20,22 @@ dotenv.config();
 const app = express();
 
 app.use(cookieParser());
-app.use(cors());
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'https://admin.shirikisho.co.tz', 'https://main.dezni8yczw4y7.amplifyapp.com'];
+
+// Configure CORS with the allowed origins
+app.use(cors({
+  origin: function (origin, callback) {
+    // Check if the request origin is in the list of allowed origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Allow the request
+    } else {
+      callback(new Error('Not allowed by CORS')); // Deny the request
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "OPTIONS", "PUT"],
+  optionsSuccessStatus: 200,
+}));
 
 app.get('/tes', (req, res) => {
   const er = {
