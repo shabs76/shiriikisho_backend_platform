@@ -1061,7 +1061,7 @@ class authProcess extends mainActsClass {
 
         const sc = {
             state: 'success',
-            data: dAns[0]
+            data: dAns
         }
         return sc;
     }
