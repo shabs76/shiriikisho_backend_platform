@@ -1041,6 +1041,63 @@ class authProcess extends mainActsClass {
         return sc;
     }
 
+
+    updateDriverMainDetailsInitProcess = async (driverId) => {
+        const dAns = await authDbObj.selectDriverNoPassDetails([driverId, 'deleted'], " `driver_id` = ? AND `status` != ? ");
+        if (!_.isArray(dAns)) {
+            this.Mlogger.error(dAns);
+            const er = {
+                state: 'error',
+                data: 'Tatizo limejitokeza wakati wakupata taarifa zako. Tafadhali jaribu tena.'
+            }
+            return er;
+        } else if (_.isArray(dAns) && _.isEmpty(dAns)) {
+            const er = {
+                state: 'error',
+                data: 'Taarifa za dereva hazipo. Tafadhali wasiliana na uwongozi'
+            }
+            return er;
+        }
+
+        const sc = {
+            state: 'success',
+            data: dAns[0]
+        }
+        return sc;
+    }
+
+    updateDriverMainDetailsMidProcess = async (info) => {
+        if (typeof (info.phoneNumber) !== 'string' || typeof (info.driverId) !== 'string' ) {
+            const er = {
+                state: 'error',
+                data: 'Missing information. Try again'
+            }
+            return er;
+        }
+        // send login code.
+        const ansPhCO = await this.verifyDriverPhoneInitProcess(info.phoneNumber, info.driverId, 'repeat');
+        return ansPhCO;
+    }
+
+
+    updateDriverMainDetailsLastProcess = async (info) => {
+        if (typeof (info.code) !== 'number' || typeof (info.otp_id) !== 'string') {
+            const er = {
+                state: 'error',
+                data: 'Missing information. Try again-'
+            }
+            return er;
+        }
+        // check if the code is correct.
+        const veAns = await this.verifyDriverPhoneCodeProcess(info.code, info.otp_id, 'internal');
+        if (veAns.state !== 'success') {
+            return veAns;
+        }
+        // update information
+        const upAns = await authDbObj.updateDriverMajorDetails(info);
+        return upAns;
+    }
+
     registerNewCountryProcess = async (data) => {
         const permInf = {
             logKey: data.logKey,

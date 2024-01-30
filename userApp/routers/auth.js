@@ -85,5 +85,62 @@ router.post('/forget/pass/last', async (req, res) => {
     res.json(ansl);
 });
 
+router.post('/update/driver/major/init', async (req, res) => {
+    // check if the login info are valid still 
+    const hedz = req.headers;
+    const info = {
+        logKey: hedz.drlogkey,
+        logSess: hedz.drlogsess
+    };
+   const ansLog = await authProcessObj.checkDriversLoginStatus(info);
+   if (ansLog.state !== 'success') {
+     ansLog.adv = 'logout';
+     return res.json(ansLog);
+   }
+   if (typeof (req.body.driverId) !== 'string' ) {
+        const er = {
+            state: 'error',
+            data: 'Driver id is missing. Please include driver id to be able to perform this process'
+        }
+        return res.json(er);
+   }
+    const ansu = await authProcessObj.updateDriverMainDetailsInitProcess(req.body.driverId);
+    return res.json(ansu)
+});
+
+router.post('/update/driver/major/mid', async (req, res) => {
+    // check if the login info are valid still 
+    const hedz = req.headers;
+    const info = {
+        logKey: hedz.drlogkey,
+        logSess: hedz.drlogsess
+    };
+   const ansLog = await authProcessObj.checkDriversLoginStatus(info);
+   if (ansLog.state !== 'success') {
+     ansLog.adv = 'logout';
+     return res.json(ansLog);
+   }
+
+   const ansu = await authProcessObj.updateDriverMainDetailsMidProcess(req.body);
+   return res.json(ansu);
+});
+
+router.post('/update/driver/major/last', async (req, res) => {
+    // check if the login info are valid still 
+    const hedz = req.headers;
+    const info = {
+        logKey: hedz.drlogkey,
+        logSess: hedz.drlogsess
+    };
+   const ansLog = await authProcessObj.checkDriversLoginStatus(info);
+   if (ansLog.state !== 'success') {
+     ansLog.adv = 'logout';
+     return res.json(ansLog);
+   }
+
+   const ansu = await authProcessObj.updateDriverMainDetailsLastProcess(req.body);
+   return res.json(ansu);
+});
+
 const authRouter = router;
 export default authRouter;
