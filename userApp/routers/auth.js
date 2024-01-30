@@ -121,9 +121,11 @@ router.post('/update/driver/major/mid', async (req, res) => {
    if (ansLog.state !== 'success') {
      ansLog.adv = 'logout';
      return res.json(ansLog);
-   }
+   }else if (req.body.driverId === 'mine') {
+        req.body.driverId = ansLog.driver_id;
+    }
 
-   const ansu = await authProcessObj.updateDriverMainDetailsMidProcess(req.body);
+   const ansu = await authProcessObj.updateDriverMainDetailsMidProcess(req.body.driverId);
    return res.json(ansu);
 });
 
