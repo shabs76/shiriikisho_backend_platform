@@ -1066,16 +1066,31 @@ class authProcess extends mainActsClass {
         return sc;
     }
 
-    updateDriverMainDetailsMidProcess = async (info) => {
-        if (typeof (info.phoneNumber) !== 'string' || typeof (info.driverId) !== 'string' ) {
+    updateDriverMainDetailsMidProcess = async (driverId) => {
+        if (typeof (driverId) !== 'string' ) {
             const er = {
                 state: 'error',
                 data: 'Missing information. Try again'
             }
             return er;
         }
+        const driver = await authDbObj.selectDriverNoPassDetails([driverId, 'deleted'], " `driver_id` = ? AND `status` != ? ");
+        if (!_.isArray(driver)) {
+            this.Mlogger.error(driver);
+            const er = {
+                state: 'error',
+                data: 'Tatizo limejitokeza wakati wakupata taarifa zako. Tafadhali jaribu tena.'
+            }
+            return er;
+        } else if (_.isArray(driver) && _.isEmpty(driver)) {
+            const er = {
+                state: 'error',
+                data: 'Taarifa za dereva hazipo. Tafadhali wasiliana na uwongozi'
+            }
+            return er;
+        }
         // send login code.
-        const ansPhCO = await this.verifyDriverPhoneInitProcess(info.phoneNumber, info.driverId, 'repeat');
+        const ansPhCO = await this.verifyDriverPhoneInitProcess(driver[0].phone, driverId, 'repeat');
         return ansPhCO;
     }
 

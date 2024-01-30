@@ -103,6 +103,8 @@ router.post('/update/driver/major/init', async (req, res) => {
             data: 'Driver id is missing. Please include driver id to be able to perform this process'
         }
         return res.json(er);
+   } else if (req.body.driverId === 'mine') {
+        req.body.driverId = ansLog.driver_id;
    }
     const ansu = await authProcessObj.updateDriverMainDetailsInitProcess(req.body.driverId);
     return res.json(ansu)
