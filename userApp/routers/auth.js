@@ -117,7 +117,7 @@ router.post('/update/driver/major/mid', async (req, res) => {
         logKey: hedz.drlogkey,
         logSess: hedz.drlogsess
     };
-   const ansLog = await authProcessObj.checkDriversLoginStatus(info);
+   const ansLog = await authProcessObj.checkDriversLoginStatus(infremo);
    if (ansLog.state !== 'success') {
      ansLog.adv = 'logout';
      return res.json(ansLog);
