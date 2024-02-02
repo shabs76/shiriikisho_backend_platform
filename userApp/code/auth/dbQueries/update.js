@@ -81,13 +81,13 @@ export class updateDbClass extends selectDBClass {
 
     updateDriverMajorDetails = async (info) => {
         try{
-            const requireVals = ['driver_id', 'fname', 'mname', 'lname', 'email', 'dob', 'gender', 'relation', 'residence', 'park_area', 'vehicle_number', 'licence_number', 'id_type', 'id_number', 'id_picture', 'passport'];
+            const requireVals = ['driver_id', 'fname', 'mname', 'lname', 'email', 'dob', 'gender', 'relation', 'residence', 'park_area', 'vehicle_number', 'licence_number', 'id_type', 'id_number', 'id_picture', 'passport', 'insurance'];
             const reState = this.checkRequireValues(requireVals, info);
             if (typeof (reState.state) !== 'undefined' && reState.state === 'error') {
                 return reState;
             }
-            const qlup = "UPDATE `drivers` SET `fname`=?,`mname`=?,`lname`=?,`email`=?, `dob`=?,`gender`=?,`relationship`=?,`residence`=?,`park_area`=?,`vehicle_number`=?,`licence_number`=?, `id_type`=?,`id_number`=?, `id_picture`= ?,`passport`= ? WHERE `driver_id`= ? ";
-            const [ansUpdt] = await this.dbConn.query(qlup, [info.fname, info.mname, info.lname, info.email, info.dob, info.gender, info.relation, info.residence, info.park_area, info.vehicle_number, info.licence_number, info.id_type, info.id_number, info.driver_id, info.id_picture, info.passport]);
+            const qlup = "UPDATE `drivers` SET `fname`=?,`mname`=?,`lname`=?,`email`=?, `dob`=?,`gender`=?,`relationship`=?,`residence`=?,`park_area`=?,`vehicle_number`=?,`licence_number`=?, `id_type`=?,`id_number`=?, `id_picture`= ?,`passport`= ?, `insurance` = ? WHERE `driver_id`= ? ";
+            const [ansUpdt] = await this.dbConn.query(qlup, [info.fname, info.mname, info.lname, info.email, info.dob, info.gender, info.relation, info.residence, info.park_area, info.vehicle_number, info.licence_number, info.id_type, info.id_number, info.id_picture, info.passport, info.insurance, info.driver_id,]);
             if (typeof (ansUpdt.affectedRows) === 'number' && ansUpdt.affectedRows > 0) {
                 const suc = {
                     state: 'success',

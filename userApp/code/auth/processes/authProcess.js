@@ -1096,18 +1096,18 @@ class authProcess extends mainActsClass {
 
 
     updateDriverMainDetailsLastProcess = async (info) => {
-        if (typeof (info.code) !== 'number' || typeof (info.otp_id) !== 'string') {
-            const er = {
-                state: 'error',
-                data: 'Missing information. Try again-'
-            }
-            return er;
-        }
-        // check if the code is correct.
-        const veAns = await this.verifyDriverPhoneCodeProcess(info.code, info.otp_id, 'internal');
-        if (veAns.state !== 'success') {
-            return veAns;
-        }
+        // if (typeof (info.code) !== 'number' || typeof (info.otp_id) !== 'string') {
+        //     const er = {
+        //         state: 'error',
+        //         data: 'Missing information. Try again-'
+        //     }
+        //     return er;
+        // }
+        // // check if the code is correct.
+        // const veAns = await this.verifyDriverPhoneCodeProcess(info.code, info.otp_id, 'internal');
+        // if (veAns.state !== 'success') {
+        //     return veAns;
+        // }
         // update information
         const upAns = await authDbObj.updateDriverMajorDetails(info);
         return upAns;
