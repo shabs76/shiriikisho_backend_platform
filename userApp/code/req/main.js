@@ -109,7 +109,7 @@ export class mainActsClass extends otherServiceApiRequest {
     }
 
     createRandNubs (length) {
-        const characters = '01234567890987654321';
+        const characters = '123456789987654321';
         let result = '';
         const charactersLength = characters.length;
         for ( let i = 0; i < length; i++ ) {

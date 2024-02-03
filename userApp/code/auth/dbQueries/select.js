@@ -119,6 +119,12 @@ export class selectDBClass extends insertDbClass{
         return ans;
     }
 
+    selectChamasDetails = async (whereArr = [''], subquery = " `chama_id` = ? ") => {
+        const ql = "SELECT `chama_id`, `jina`, `wilaya`, `mkoa`, `simu`, `email`, `status`, `chama_date` FROM `chamas` WHERE "+subquery;
+        const ans = await this.runQuery(whereArr, ql);
+        return ans;
+    }
+
     // relationships starts here.
 
     selectLeaderTypesPermissions = async (whereArr = [''], subquery = " `rels_id` = ?") => {

@@ -419,12 +419,57 @@ class authProcess extends mainActsClass {
             }
             return er;
         }
+        // check if chama id exists
+        const chn = await authDbObj.selectChamasDetails([data.chama]);
+
+        if (!_.isArray(chn)) {
+            this.Mlogger.error(chn);
+            const er = {
+                state: "error",
+                data: "Tatizo limejitokeza wakati wakuhahiki chama"
+            }
+            return er;
+        } else if (_.isArray(chn) && _.isEmpty(chn)) {
+            const er = {
+                state: "error",
+                data: "Chama ulichochagua hakipo. Tafadhali chagua chama kingine"
+            }
+            return er;
+        }
 
         // check if phone number verification exists and get phone number
         const veriPhone = await this.checkForValidVerifiedPhoneIdProcess(data.verid); 
         if (veriPhone.state !== 'success') {
             return veriPhone;
         }
+        if (!authProcessObj.isValidPhone(data.kin_phone)) {
+            const er = {
+                state: 'error',
+                data: 'Namba ya mtu wako wakaribu sio sahihi'
+            }
+            return er;
+        }
+        if (veriPhone.phone == data.kin_phone) {
+            const er = {
+                state: "error",
+                data: "Namba yako na ya mtu wa karibu hazipaswi kufanana. Tafadhali weka namba sahihi."
+            }
+            return er;
+        }
+
+        const textInfo = {
+            phone: data.kin_phone,
+            sms: 'Habari, Mwanachama '+data.fname+' '+data.lname+' amekuchagua kuwa mtu wake wa wakaribu. Kama haukubaliani na swala hili. Tafadhali wasiliana na 0712902927'
+        }
+        const sendTextAns = await this.sendNormalTexts(textInfo);
+        if (sendTextAns.state !== 'success') {
+            const er = {
+                state: 'error',
+                data: 'Mfumo umeshindwa kutuma ujumbe kwa mtu wako wa karibu'
+            }
+            return er;
+        }
+
         data.phone = veriPhone.phone;
         const regAns = await authDbObj.addingdriversDetails(data);
         return regAns;

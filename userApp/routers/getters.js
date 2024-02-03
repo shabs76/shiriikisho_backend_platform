@@ -29,7 +29,10 @@ router.get('/reqistration/info', async (req, res) => {
     if (vehilces.state !== 'success') {
         return res.json(vehilces);
     }
-
+    const chamas = await GettorObj.getChamasList();
+    if (chamas.state !== 'success') {
+        return res.json(chamas);
+    }
     // compile data
     const com = {
         state: 'success',
@@ -38,7 +41,8 @@ router.get('/reqistration/info', async (req, res) => {
             parks: parks.data,
             regions: regs.data,
             districts: distx.data,
-            wards: wards.data
+            wards: wards.data,
+            chamas: chamas.data
         }
     }
     res.json(com);

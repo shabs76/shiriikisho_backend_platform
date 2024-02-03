@@ -129,6 +129,31 @@ class getInfoProcessClass extends mainActsClass{
         return sc;
     }
 
+
+    getChamasList = async () => {
+        const chnx = await authDbObj.selectChamasDetails(['active'], " `status` = ? ");
+        if (!_.isArray(chnx)) {
+            this.Mlogger.error(chnx);
+            const er = {
+                state: "error",
+                data: "An error occurred while fetching parties list"
+            }
+            return er;
+        } else if (_.isArray(chnx) && _.isEmpty(chnx)) {
+            const er = {
+                state: 'error',
+                data: 'Hakuna chama kilichosajiliwa kwenye mtandao kwa sasa. Tafadhali jaribu tena baadae au wasiliana na huduma kwa wateja'
+            }
+            return er;
+        }
+
+        const sc = {
+            state: "success",
+            data: chnx
+        }
+        return sc;
+    }
+
     getAllDriverInformation = async (driver_id) => {
         const driverInf = await authDbObj.selectDriverDetails([driver_id, 'active', 'created'], " `driver_id` = ? AND (`status` = ? OR `status` = ?)");
         if (!_.isArray(driverInf)) {
@@ -176,7 +201,8 @@ class getInfoProcessClass extends mainActsClass{
         } else if(_.isArray(uniformDet) && _.isEmpty(uniformDet)) {
             driverOb.uniform = 'Haijathibitishwa';
         } else {
-            driverOb.uniform = uniformDet[0].uniform_num;
+            // uniformDet[0].uniform_num;
+            driverOb.uniform = 'Akaunti hai';
         }
 
         
