@@ -6,13 +6,13 @@ export class selectDBClass extends insertDbClass{
     }
 
     selectDriverDetails = async (whereArr = [''], subquery = " `driver_id` != ?") => {
-        const ql = "SELECT `driver_id`, `fname`, `mname`, `lname`, `email`, `phone`, `password`, `dob`, `gender`, `relationship`, `residence`, `park_area`, `vehicle_number`, `licence_number`, `tin_number`, `id_type`, `id_number`, `id_picture`, `passport`, `insurance`, `status`, `driver_date` FROM `drivers` WHERE "+subquery;
+        const ql = "SELECT `driver_id`, `fname`, `mname`, `lname`, `email`, `phone`, `password`, `dob`, `gender`, `relationship`, `residence`, `park_area`, `vehicle_number`, `licence_number`, `tin_number`, `id_type`, `id_number`, `id_picture`, `passport`, `insurance`, `chama`, `kin_name`, `kin_phone`, `status`, `driver_date` FROM `drivers` WHERE "+subquery;
         const ans = await this.runQuery(whereArr, ql);
         return ans;
     }
 
     selectDriverNoPassDetails = async (whereArr = [''], subquery = " `driver_id` != ?") => {
-        const ql = "SELECT `driver_id`, `fname`, `mname`, `lname`, `email`, `phone`, `dob`, `gender`, `relationship`, `residence`, `park_area`, `vehicle_number`, `licence_number`, `tin_number`, `id_type`, `id_number`, `id_picture`, `passport`, `insurance`, `status`, `driver_date` FROM `drivers` WHERE "+subquery;
+        const ql = "SELECT `driver_id`, `fname`, `mname`, `lname`, `email`, `phone`, `dob`, `gender`, `relationship`, `residence`, `park_area`, `vehicle_number`, `licence_number`, `tin_number`, `id_type`, `id_number`, `id_picture`, `passport`, `insurance`, `chama`, `kin_name`, `kin_phone`, `status`, `driver_date` FROM `drivers` WHERE "+subquery;
         const ans = await this.runQuery(whereArr, ql);
         return ans;
     }
