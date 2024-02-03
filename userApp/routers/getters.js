@@ -124,6 +124,11 @@ router.get('/other/drivers', async (req, res) => {
    }
    const oDrivers = await GettorObj.getOtherDriversMember(ansLog.driver_id);
    res.json(oDrivers);
+});
+
+router.get('/chama', async (req, res) => {
+    const chamz = await GettorObj.getChamasList();
+    res.json(chamz);
 })
 
 // from here information requires login

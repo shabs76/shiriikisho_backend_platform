@@ -280,6 +280,7 @@ class getInfoProcessClass extends mainActsClass{
             return er;
         }
         // check for unverified drivers
+        const uDrivers = [];
         const unVerDriver = await authDbObj.selectDriverNoPassDetails([paLeader[0].park_id, 'created', leader_driver_id], " `park_area` = ? AND `status` = ? AND `driver_id` != ? ");
         if (!_.isArray(unVerDriver)) {
             this.Mlogger.error(unVerDriver);
@@ -288,6 +289,16 @@ class getInfoProcessClass extends mainActsClass{
                 data: 'An error has occurred while fetching driver information',
             };
             return er;
+        } else if (_.isArray(unVerDriver) && !_.isEmpty(unVerDriver)) {
+            // fetch chama name
+            for (let index = 0; index < unVerDriver.length; index++) {
+                const undrive = unVerDriver[index];
+                const chma = await authDbObj.selectChamasDetails([undrive.chama]);
+                if (_.isArray(chma) && !_.isEmpty(chma)) {
+                    undrive.chama = chma[0].jina;
+                    uDrivers.push(undrive);
+                }
+            }
         }
         const sc = {
             state: 'success',
