@@ -164,9 +164,6 @@ services:
       - mariadb
       - normal_user_app
       - admin_user_app
-      - social_ks_app
-      - ks_pay_gateway_app
-      - ks_loans_app
 
   certbot:
     image: certbot/certbot:latest
