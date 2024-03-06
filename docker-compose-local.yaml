@@ -122,7 +122,7 @@ services:
       - shirikisho_net
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:fpm-alpine
+    image: phpmyadmin:5.2.1-fpm
     container_name: shirikisho_mariaphpmyadmin
     environment:
       PMA_HOST: mariadb

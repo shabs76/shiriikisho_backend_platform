@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import Ffmpeg from 'fluent-ffmpeg';
+import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 // internal modules
@@ -15,15 +16,25 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 const compressImage = (inputPath, outputPath, quality) => {
-  Ffmpeg(inputPath)
-    .outputOptions([`-compression_level ${quality}`, '-f webp'])
-    .save(outputPath)
-    .on('end', () => {
-      console.log(`Image compressed with quality: ${quality} in WebP format`);
-    })
-    .on('error', (err) => {
-      console.error('Error:', err);
-    });
+  const ffmpegProcess = spawn('ffmpeg', [
+      '-i', inputPath,
+      '-compression_level', quality,
+      '-f', 'webp',
+      outputPath
+  ]);
+
+  ffmpegProcess.on('exit', (code, signal) => {
+      if (code === 0) {
+          console.log(`Image compressed with quality: ${quality} in WebP format`);
+      } else {
+          console.error(`Ffmpeg process exited with code ${code} and signal ${signal}`);
+      }
+  });
+
+  ffmpegProcess.on('error', (err) => {
+      console.error('Ffmpeg process error:', err);
+  });
+  // ffmpegProcess.kill(); dont enable this until you figureout what is wrong.
 }
 
 const compressVideo = (inputPath, outputPath, quality) => {
@@ -56,20 +67,30 @@ app.post('/upload/images', imageUpload.single('image'), async (req, res) => {
   }
 
   const { path: imagePath, filename } = req.file;
-  const lowQualityPath = path.join('./media/images', `${filename}_low_image.webp`);
-  const mediumQualityPath = path.join('./media/images', `${filename}_medium_image.webp`);
-  const highQualityPath = path.join('./media/images', `${filename}_high_image.webp`);
 
-  // Compress the uploaded image with different qualities
-  compressImage(imagePath, lowQualityPath, 30);
-  compressImage(imagePath, mediumQualityPath, 60);
-  compressImage(imagePath, highQualityPath, 90);
+  // *******THESE NEED TO BE FIXED LATER AS THEY CAUSE SEVER TO STOP WHEN USED EXESSIVELY **********
+  // const lowQualityPath = path.join('./media/images', `${filename}_low_image.webp`);
+  // const mediumQualityPath = path.join('./media/images', `${filename}_medium_image.webp`);
+  // const highQualityPath = path.join('./media/images', `${filename}_high_image.webp`);
+
+  // // Compress the uploaded image with different qualities
+  // compressImage(imagePath, lowQualityPath, 30);
+  // compressImage(imagePath, mediumQualityPath, 60);
+  // compressImage(imagePath, highQualityPath, 90);
+
+  // const saveDat = {
+  //   o_path: imagePath,
+  //   l_path: lowQualityPath,
+  //   m_path: mediumQualityPath,
+  //   h_path: highQualityPath,
+  //   purpose: datz.purpose,
+  // }
 
   const saveDat = {
     o_path: imagePath,
-    l_path: lowQualityPath,
-    m_path: mediumQualityPath,
-    h_path: highQualityPath,
+    l_path: imagePath,
+    m_path: imagePath,
+    h_path: imagePath,
     purpose: datz.purpose,
   }
 
@@ -93,10 +114,10 @@ const authcheckForAcces = async (hedz) => {
 
 app.get('/get/image/:image/:logkey/:logsess/:keytype', async (req, res) => {
     const { image, keytype, logkey, logsess } = req.params;
-    const ansCheck = await authcheckForAcces({keytype, logkey, logsess});
-    if (!ansCheck) {
-      return res.status(403).send('Forbidden');
-    }
+    // const ansCheck = await authcheckForAcces({keytype, logkey, logsess});
+    // if (!ansCheck) {
+    //   return res.status(403).send('Forbidden');
+    // }
     const imageD = await mediaStorageObj.getAllImagesPathsNormal(image);
     if (imageD.state !== 'success') {
         return res.status(404).send('File record not found');
