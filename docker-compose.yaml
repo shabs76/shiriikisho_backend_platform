@@ -44,51 +44,51 @@ services:
       - "5700:5700"
     networks:
       - shirikisho_net
-  social_ks_app:
-    build:
-      args:
-        user: social_ks_user
-        uid: 14000
-      context: ./
-      dockerfile: DockerfilesocialApp
-    container_name: social_ks_app
-    working_dir: /usr/src/app
-    volumes:
-      - ./socialApp/:/usr/src/app
-    ports: 
-      - "5300:5300"
-    networks:
-      - shirikisho_net
-  ks_pay_gateway_app:
-    build:
-      args:
-        user: ks_pay_gateway_user
-        uid: 15000
-      context: ./
-      dockerfile: DockerfiletranApp
-    container_name: ks_pay_gateway_app
-    working_dir: /usr/src/app
-    volumes:
-      - ./transactionApp/:/usr/src/app
-    ports: 
-      - "5400:5400"
-    networks:
-      - shirikisho_net
-  ks_loans_app:
-    build:
-      args:
-        user: ks_loans_user
-        uid: 16000
-      context: ./
-      dockerfile: DockerfileloanApp
-    container_name: ks_loans_app
-    working_dir: /usr/src/app
-    volumes:
-      - ./loanApp/:/usr/src/app
-    ports: 
-      - "5500:5500"
-    networks:
-      - shirikisho_net
+  # social_ks_app:
+  #   build:
+  #     args:
+  #       user: social_ks_user
+  #       uid: 14000
+  #     context: ./
+  #     dockerfile: DockerfilesocialApp
+  #   container_name: social_ks_app
+  #   working_dir: /usr/src/app
+  #   volumes:
+  #     - ./socialApp/:/usr/src/app
+  #   ports: 
+  #     - "5300:5300"
+  #   networks:
+  #     - shirikisho_net
+  # ks_pay_gateway_app:
+  #   build:
+  #     args:
+  #       user: ks_pay_gateway_user
+  #       uid: 15000
+  #     context: ./
+  #     dockerfile: DockerfiletranApp
+  #   container_name: ks_pay_gateway_app
+  #   working_dir: /usr/src/app
+  #   volumes:
+  #     - ./transactionApp/:/usr/src/app
+  #   ports: 
+  #     - "5400:5400"
+  #   networks:
+  #     - shirikisho_net
+  # ks_loans_app:
+  #   build:
+  #     args:
+  #       user: ks_loans_user
+  #       uid: 16000
+  #     context: ./
+  #     dockerfile: DockerfileloanApp
+  #   container_name: ks_loans_app
+  #   working_dir: /usr/src/app
+  #   volumes:
+  #     - ./loanApp/:/usr/src/app
+  #   ports: 
+  #     - "5500:5500"
+  #   networks:
+  #     - shirikisho_net
   ks_media_app:
     build:
       args:
@@ -121,7 +121,7 @@ services:
       - shirikisho_net
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:fpm-alpine
+    image: phpmyadmin:5.2.1-fpm
     container_name: shirikisho_mariaphpmyadmin
     environment:
       PMA_HOST: mariadb
