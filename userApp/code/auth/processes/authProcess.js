@@ -459,7 +459,7 @@ class authProcess extends mainActsClass {
 
         const textInfo = {
             phone: data.kin_phone,
-            sms: 'Habari, Mwanachama '+data.fname+' '+data.lname+' amekuchagua kuwa mtu wake wa wakaribu. Kama haukubaliani na swala hili. Tafadhali wasiliana na 0712902927'
+            sms: 'Habari, Mwanachama '+data.fname+' '+data.lname+' amekuchagua kuwa mtu wake wa wakaribu. Kama haukubaliani na swala hili. Tafadhali wasiliana na 0659644211'
         }
         const sendTextAns = await this.sendNormalTexts(textInfo);
         if (sendTextAns.state !== 'success') {
